@@ -1,8 +1,11 @@
-import dotevnt from "dotenv";
+import dotenv from "dotenv";
 
-dotevnt.config();
+dotenv.config();
 
-export const config = {
+export const environment = {
   port: process.env.PORT || 5000,
-  mongoUri: process.env.DB_URL || "",
+  mongoUri: process.env.MONGO_URI as string,
+  jwtSecret: process.env.JWT_SECRET as string,
+  refreshSecret: process.env.JWT_REFRESH_SECRET as string,
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
 };
