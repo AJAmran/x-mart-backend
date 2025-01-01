@@ -1,19 +1,57 @@
-import mongoose from "mongoose";
+import { Server } from "http";
 import app from "./app";
-import dotenv from "dotenv";
-import { config } from "./config";
+import mongoose from "mongoose";
 
-dotenv.config();
-const a = 30;
+import config from "../src/config";
 
-async function main() {
-  try {
-    await mongoose.connect(config.mongoUri);
+let server: Server;
 
-    app.listen(config.port, () => {
-      console.log(`Example app listening on port ${config.port}`);
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception", error);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled Rejection:", error);
+  if (server) {
+    server.close(() => {
+      console.error("Server closed to unhandled rejection");
+      process.exit(1);
     });
-  } catch (error) {}
+  } else {
+    process.exit(1);
+  }
+});
+
+async function bootstrap() {
+  try {
+    if (!config.mongoUri || !config.port) {
+      throw new Error("Environment variables are missing or invalid");
+    }
+
+    await mongoose.connect(config.mongoUri as string);
+    console.log("🛢 Database connected successfully");
+    server = app.listen(config.port, () => {
+      console.log(`🚀 Application is running on port ${config.port}`);
+    });
+  } catch (error) {
+    console.error("Failed to connect to database:", error);
+    process.exit(1);
+  }
 }
 
-main();
+bootstrap();
+const shutdown = async (signal: string) => {
+  console.log(`${signal} received`);
+  if (server) {
+    server.close(() => {
+      console.log("Server closed");
+    });
+  }
+  await mongoose.disconnect();
+  console.log("Database disconnected");
+  process.exit(0);
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
