@@ -1,10 +1,10 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
-import helmet from "helmet";
 import AutRoute from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 import httpStatus from "http-status";
 import globalErrorHandler from "./middleware/globalErrorHandler";
+import notFound from "./middleware/notFound";
 
 const app: Application = express();
 
@@ -26,8 +26,7 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 //global error handler
 app.use(globalErrorHandler);
 
-
 //handle not found
-
+app.use(notFound);
 
 export default app;
