@@ -1,21 +1,28 @@
-import express, { Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import productRoutes from "./routes/productRoutes";
-const app = express();
+import AutRoute from "./routes/authRoutes";
+import cookieParser from "cookie-parser";
+import httpStatus from "http-status";
+
+const app: Application = express();
 
 app.use(cors());
-app.use(helmet());
+app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/products", productRoutes);
+app.use("/api/v1/auth", AutRoute);
 
-app.use((err: any, req: any, res: any, next: any) => {
-  res.status(err.status || 500).json({ error: err.message });
+
+//Testing
+app.get('/', (req: Request, res: Response, next: NextFunction) => {
+  res.status(httpStatus.OK).json({
+    success: true,
+    message: 'Welcome to the Lost And Found API',
+  });
 });
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Helssssslo World!");
-});
+
 
 export default app;
