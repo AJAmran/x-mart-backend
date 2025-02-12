@@ -2,6 +2,8 @@ import express from "express";
 import validateRequest from "../middleware/validateRequest";
 import { AuthValidation } from "../validations/authValidation";
 import { AuthControllers } from "../controllers/authController";
+import auth from "../middleware/authMiddleware";
+import { USER_ROLE } from "../constants/userConstant";
 
 const router = express.Router();
 
@@ -17,6 +19,10 @@ router.post(
   AuthControllers.loginUser
 );
 
-router.post("/change-password", auth);
+router.post("/change-password", auth(USER_ROLE.USER, USER_ROLE.ADMIN),
+validateRequest(AuthValidation.changePasswordValidationSchema),
+
+)
+);
 
 export default router;
