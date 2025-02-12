@@ -17,4 +17,6 @@ router.post(
   AuthControllers.loginUser
 );
 
+router.post("/change-password", auth);
+
 export default router;
