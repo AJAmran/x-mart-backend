@@ -1,5 +1,5 @@
 import express from "express";
-import validateRequest from "../middleware/validateRequest";
+import validateRequest, { validateRequestCookies } from "../middleware/validateRequest";
 import { AuthValidation } from "../validations/authValidation";
 import { AuthControllers } from "../controllers/authController";
 import auth from "../middleware/authMiddleware";
@@ -25,5 +25,7 @@ router.post(
   validateRequest(AuthValidation.changePasswordValidationSchema),
   AuthControllers.changePassword
 );
+
+router.post("/change-password", validateRequestCookies(AuthValidation.refreshTokenValidationSchema));
 
 export default router;
