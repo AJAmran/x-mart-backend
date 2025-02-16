@@ -29,7 +29,7 @@ router.post(
 );
 
 router.post(
-  "/change-password",
+  "/refresh-token",
   validateRequestCookies(AuthValidation.refreshTokenValidationSchema),
   AuthControllers.refreshToken
 );
