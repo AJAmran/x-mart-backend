@@ -4,7 +4,7 @@ import { catchAsync } from "../utils/catchAsync";
 import sendResponse from "../utils/sendResponse";
 import httpStatus from "http-status";
 
-const registeruser = catchAsync(async (req, res) => {
+const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUser(req.body);
   const { accessToken, refreshToken } = result;
 
@@ -52,7 +52,7 @@ const changePassword = catchAsync(async (req, res) => {
 
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
-  const result = await AuthService.refrshToken(refreshToken);
+  const result = await AuthService.refreshToken(refreshToken);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -63,7 +63,7 @@ const refreshToken = catchAsync(async (req, res) => {
 });
 
 export const AuthControllers = {
-  registeruser,
+  registerUser,
   loginUser,
   changePassword,
   refreshToken,
