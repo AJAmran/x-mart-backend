@@ -19,7 +19,7 @@ app.use("/api/v1/auth", AutRoute);
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(httpStatus.OK).json({
     success: true,
-    message: "Welcome to the Lost And Found API",
+    message: "Welcome to the x-mart api",
   });
 });
 
