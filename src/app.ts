@@ -8,7 +8,22 @@ import notFound from "./middleware/notFound";
 
 const app: Application = express();
 
-app.use(cors());
+// CORS configuration
+const allowedOrigins = ["http://localhost:3000", "https://yourdomain.com"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow cookies and authorization headers
+  })
+);
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
