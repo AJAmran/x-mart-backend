@@ -1,27 +1,36 @@
-import mongoose, { Schema, model } from "mongoose";
+import { model, Schema, Types } from "mongoose";
+import { PRODUCT_CATEGORY, PRODUCT_STATUS } from "../constants/productConstant";
+import { TProduct } from "../interface/productInterface";
 
-type Product = {
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  discountPrice?: number;
-  stock: number;
-  images: string[];
-  isFeatured: boolean;
-};
+const productSchema = new Schema<TProduct>(
+  {
+    name: { type: String, required: true, trim: true },
+    description: { type: String, required: true, trim: true },
+    price: { type: Number, required: true, min: 0 },
+    category: {
+      type: String,
+      enum: Object.keys(PRODUCT_CATEGORY) as (keyof typeof PRODUCT_CATEGORY)[],
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: Object.keys(PRODUCT_STATUS) as (keyof typeof PRODUCT_STATUS)[],
+      default: "ACTIVE",
+    },
+    stock: { type: Number, required: true, min: 0 },
+    images: { type: [String], default: [] },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    discount: {
+      type: {
+        type: String,
+        enum: ["percentage", "fixed"],
+      },
+      value: { type: Number, min: 0 },
+      startDate: { type: Date },
+      endDate: { type: Date },
+    },
+  },
+  { timestamps: true }
+);
 
-const productSchema = new Schema<Product>({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  category: { type: String, required: true },
-  price: { type: Number, required: true },
-  discountPrice: { type: Number },
-  stock: { type: Number, required: true },
-  images: [{ type: String }],
-  isFeatured: { type: Boolean, default: false },
-}, {
-  timestamps: true,
-});
-
-export default model<Product>("Product", productSchema);
+export const Product = model<TProduct>("Product", productSchema);
