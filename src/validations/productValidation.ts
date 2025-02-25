@@ -21,9 +21,7 @@ const createProductValidationSchema = z.object({
     price: z.number().min(0, { message: "Price must be a positive number" }),
     category: z.enum(
       Object.keys(PRODUCT_CATEGORY) as [keyof typeof PRODUCT_CATEGORY],
-      {
-        required_error: "Category is required",
-      }
+      { required_error: "Category is required" }
     ),
     status: z
       .enum(Object.keys(PRODUCT_STATUS) as [keyof typeof PRODUCT_STATUS])
@@ -55,7 +53,19 @@ const updateProductValidationSchema = z.object({
   }),
 });
 
+const updateStockValidationSchema = z.object({
+  body: z.object({
+    stock: z.number().min(0, { message: "Stock must be a positive number" }),
+  }),
+});
+
+const applyDiscountValidationSchema = z.object({
+  body: discountSchema,
+});
+
 export const ProductValidation = {
   createProductValidationSchema,
   updateProductValidationSchema,
+  updateStockValidationSchema,
+  applyDiscountValidationSchema,
 };

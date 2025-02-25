@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { TProduct } from "../interface/productInterface";
 import { Product } from "../models/Product";
@@ -19,8 +20,7 @@ const getAllProducts = async (filters: any, options: any) => {
   const result = await Product.find(filters)
     .sort(sortCriteria)
     .skip(skip)
-    .limit(limit)
-    .populate("createdBy", "name email");
+    .limit(limit);
 
   const total = await Product.countDocuments(filters);
 
@@ -35,7 +35,7 @@ const getAllProducts = async (filters: any, options: any) => {
 };
 
 const getProductById = async (id: string) => {
-  const result = await Product.findById(id).populate("createdBy", "name email");
+  const result = await Product.findById(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }

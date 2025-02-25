@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { PRODUCT_CATEGORY, PRODUCT_STATUS } from "../constants/productConstant";
 
 export type TDiscount = {
@@ -16,7 +15,6 @@ export type TProduct = {
   status: keyof typeof PRODUCT_STATUS;
   stock: number;
   images: string[];
-  createdBy: Types.ObjectId;
   discount?: TDiscount;
   createdAt?: Date;
   updatedAt?: Date;

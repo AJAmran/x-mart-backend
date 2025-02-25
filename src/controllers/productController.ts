@@ -1,150 +1,115 @@
 import { Request, Response } from "express";
-import Product from "../models/Product";
-import {
-  errorResponse,
-  successResponse,
-  paginatedResponse,
-} from "../utils/responseHandler";
+import { catchAsync } from "../utils/catchAsync";
+import { ProductService } from "../services/productService";
+import sendResponse from "../utils/sendResponse";
+import httpStatus from "http-status";
 
-/**
- * Create a new product
- */
-export const createProduct = async (req: Request, res: Response) => {
-  try {
-    const product = await Product.create(req.body);
-    successResponse(res, product, "Product created successfully", 201);
-  } catch (error) {
-    errorResponse(res, error);
-  }
-};
+const createProduct = catchAsync(async (req: Request, res: Response) => {
+  const productData = req.body;
+  const result = await ProductService.createProduct(productData);
 
-/**
- * Get all products with pagination, search, and filtering
- */
-export const getProducts = async (req: Request, res: Response) => {
-  try {
-    const {
-      page = 1,
-      limit = 10,
-      sort = "createdAt",
-      order = "desc",
-      search = "",
-      ...filters
-    } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Product created successfully",
+    data: result,
+  });
+});
 
-    const query: any = {};
+const getAllProducts = catchAsync(async (req: Request, res: Response) => {
+  const filters = req.query;
+  const options = {
+    page: parseInt(req.query.page as string) || 1,
+    limit: parseInt(req.query.limit as string) || 10,
+    sortBy: (req.query.sortBy as string) || "createdAt",
+    sortOrder: (req.query.sortOrder as string) || "desc",
+  };
 
-    // Apply search
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { category: { $regex: search, $options: "i" } },
-      ];
-    }
+  const result = await ProductService.getAllProducts(filters, options);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Products fetched successfully",
+    data: result.data,
+  });
+});
 
-    // Apply filters
-    for (const key in filters) {
-      query[key] = filters[key];
-    }
+const getProductById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ProductService.getProductById(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Product fetched successfully",
+    data: result,
+  });
+});
 
-    // Fetch products and count
-    const [products, total] = await Promise.all([
-      Product.find(query)
-        .sort({ [sort as string]: order === "desc" ? -1 : 1 })
-        .skip(skip)
-        .limit(Number(limit)),
-      Product.countDocuments(query),
-    ]);
+const updateProduct = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const result = await ProductService.updateProduct(id, payload);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Product updated successfully",
+    data: result,
+  });
+});
 
-    paginatedResponse(
-      res,
-      products,
-      total,
-      Number(page),
-      Number(limit),
-      "Products retrieved successfully"
-    );
-  } catch (error) {
-    errorResponse(res, error);
-  }
-};
+const deleteProduct = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ProductService.deleteProduct(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Product deleted successfully",
+    data: result,
+  });
+});
 
-/**
- * Get a product by ID
- */
-export const getProductById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const product = await Product.findById(id);
+const updateStock = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { stock } = req.body;
+  const result = await ProductService.updateStock(id, stock);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Stock updated successfully",
+    data: result,
+  });
+});
 
-    if (!product) {
-      return errorResponse(res, "Product not found", 404);
-    }
+const applyDiscount = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { discount } = req.body;
+  const result = await ProductService.applyDiscount(id, discount);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Discount applied successfully",
+    data: result,
+  });
+});
 
-    successResponse(res, product, "Product retrieved successfully");
-  } catch (error) {
-    errorResponse(res, error);
-  }
-};
+const removeDiscount = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ProductService.removeDiscount(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Discount removed successfully",
+    data: result,
+  });
+});
 
-/**
- * Update a product by ID
- */
-export const updateProduct = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const product = await Product.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!product) {
-      return errorResponse(res, "Product not found", 404);
-    }
-
-    successResponse(res, product, "Product updated successfully");
-  } catch (error) {
-    errorResponse(res, error);
-  }
-};
-
-/**
- * Delete a product by ID
- */
-export const deleteProduct = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const product = await Product.findByIdAndDelete(id);
-
-    if (!product) {
-      return errorResponse(res, "Product not found", 404);
-    }
-
-    successResponse(res, product, "Product deleted successfully");
-  } catch (error) {
-    errorResponse(res, error);
-  }
-};
-
-/**
- * Bulk delete products
- */
-export const bulkDeleteProducts = async (req: Request, res: Response) => {
-  try {
-    const { ids } = req.body; // Expecting an array of product IDs
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return errorResponse(res, "Invalid IDs provided", 400);
-    }
-
-    const result = await Product.deleteMany({ _id: { $in: ids } });
-
-    successResponse(
-      res,
-      result,
-      `${result.deletedCount} products deleted successfully`
-    );
-  } catch (error) {
-    errorResponse(res, error);
-  }
+export const ProductControllers = {
+  createProduct,
+  getAllProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+  updateStock,
+  applyDiscount,
+  removeDiscount,
 };
