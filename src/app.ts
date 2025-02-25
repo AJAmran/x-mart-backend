@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import httpStatus from "http-status";
 import globalErrorHandler from "./middleware/globalErrorHandler";
 import notFound from "./middleware/notFound";
-// import "./utils/cronJobs";
+import "./utils/cronJobs";
 
 const app: Application = express();
 
@@ -22,7 +22,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true, // Allow cookies and authorization headers
+    credentials: true, 
   })
 );
 
