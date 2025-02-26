@@ -1,5 +1,5 @@
 {
-  "name": "mr_university",
+  "name": "X-mart Supershop API",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/server.js",
@@ -7,6 +7,7 @@
     "start": "node /dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "build": "tsc",
+    "vercel-build": "npm run build",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint src --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
