@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { catchAsync } from "../utils/catchAsync";
 import { ProductService } from "../services/productService";
@@ -17,19 +18,60 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-  const filters = req.query;
+  // Extract query parameters
+  const {
+    searchTerm,
+    category,
+    minPrice,
+    maxPrice,
+    minStock,
+    maxStock,
+    status,
+    sortBy,
+    sortOrder,
+    page,
+    limit,
+  } = req.query;
+
+  // Build filters object
+  const filters: any = {};
+  if (searchTerm) {
+    filters.name = { $regex: searchTerm, $options: "i" }; // Case-insensitive search
+  }
+  if (category) {
+    filters.category = (category as string).toUpperCase(); // Convert to uppercase
+  }
+  if (minPrice || maxPrice) {
+    filters.price = {};
+    if (minPrice) filters.price.$gte = parseFloat(minPrice as string);
+    if (maxPrice) filters.price.$lte = parseFloat(maxPrice as string);
+  }
+  if (minStock || maxStock) {
+    filters.stock = {};
+    if (minStock) filters.stock.$gte = parseInt(minStock as string);
+    if (maxStock) filters.stock.$lte = parseInt(maxStock as string);
+  }
+  if (status) {
+    filters.status = (status as string).toUpperCase(); // Convert to uppercase
+  }
+
+  // Build options object
   const options = {
-    page: parseInt(req.query.page as string) || 1,
-    limit: parseInt(req.query.limit as string) || 10,
-    sortBy: (req.query.sortBy as string) || "createdAt",
-    sortOrder: (req.query.sortOrder as string) || "desc",
+    page: parseInt(page as string) || 1,
+    limit: parseInt(limit as string) || 10,
+    sortBy: (sortBy as string) || "createdAt",
+    sortOrder: (sortOrder as string) || "desc",
   };
 
+  // Fetch products
   const result = await ProductService.getAllProducts(filters, options);
+
+  // Send response
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Products fetched successfully",
+    meta: result.meta,
     data: result.data,
   });
 });

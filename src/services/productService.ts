@@ -12,16 +12,21 @@ const createProduct = async (payload: TProduct) => {
 const getAllProducts = async (filters: any, options: any) => {
   const { page, limit, sortBy, sortOrder } = options;
 
+  // Calculate skip for pagination
   const skip = (page - 1) * limit;
+
+  // Build sort criteria
   const sortCriteria: { [key: string]: 1 | -1 } = {
     [sortBy]: sortOrder === "desc" ? -1 : 1,
   };
 
+  // Fetch products with filters, sorting, and pagination
   const result = await Product.find(filters)
     .sort(sortCriteria)
     .skip(skip)
     .limit(limit);
 
+  // Count total documents for pagination metadata
   const total = await Product.countDocuments(filters);
 
   return {
