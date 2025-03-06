@@ -30,6 +30,7 @@ const registerUser = async (payload: TRegisterUser) => {
     mobileNumber: newUser.mobileNumber,
     role: newUser.role,
     status: newUser.status,
+    profilePhoto: newUser.profilePhoto,
   };
 
   const accessToken = createToken(
@@ -73,6 +74,7 @@ const loginUser = async (payload: TLoginUser) => {
     mobileNumber: user.mobileNumber,
     role: user.role,
     status: user.status,
+    profilePhoto: user.profilePhoto,
   };
 
   const accessToken = createToken(
