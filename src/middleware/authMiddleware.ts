@@ -10,7 +10,15 @@ import { User } from "../models/User";
 
 const auth = (...requiredRoles: (keyof typeof USER_ROLE)[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
+    const authHeader = req.headers.authorization;
+
+    // Check if Authorization header is present and starts with "Bearer "
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized access");
+    }
+
+    // Extract token after "Bearer "
+    const token = authHeader.split(" ")[1];
 
     // Check if token is present
     if (!token) {

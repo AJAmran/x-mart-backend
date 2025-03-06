@@ -1,5 +1,5 @@
 {
-  "name": "mr_university",
+  "name": "X-mart Supershop API",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/server.js",
@@ -7,6 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
+    "build": "tsc",
+    "vercel-build": "npm run build",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint src --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,6 +28,7 @@
     "i": "^0.3.7",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.4",
+    "node-cron": "^3.0.3",
     "npm": "^11.1.0",
     "ts-node-dev": "^2.0.0",
     "zod": "^3.24.1"
@@ -40,6 +43,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^22.5.1",
+    "@types/node-cron": "^3.0.11",
     "eslint": "^9.9.1",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.3.0"
