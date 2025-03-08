@@ -11,7 +11,7 @@ import "./utils/cronJobs";
 const app: Application = express();
 
 // CORS configuration
-const allowedOrigins = ["http://localhost:3000", "https://yourdomain.com"];
+const allowedOrigins = ["http://localhost:3000", "https://x-mart-client.vercel.app"];
 
 app.use(
   cors({
