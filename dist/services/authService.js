@@ -38,6 +38,7 @@ const registerUser = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         mobileNumber: newUser.mobileNumber,
         role: newUser.role,
         status: newUser.status,
+        profilePhoto: newUser.profilePhoto,
     };
     const accessToken = (0, VerifyJWt_1.createToken)(jwtPayload, config_1.default.jwtSecret, config_1.default.jwtExpiresIn);
     const refreshToken = (0, VerifyJWt_1.createToken)(jwtPayload, config_1.default.refreshSecret, config_1.default.refreshExpiresIn);
@@ -64,6 +65,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         mobileNumber: user.mobileNumber,
         role: user.role,
         status: user.status,
+        profilePhoto: user.profilePhoto,
     };
     const accessToken = (0, VerifyJWt_1.createToken)(jwtPayload, config_1.default.jwtSecret, config_1.default.jwtExpiresIn);
     const refreshToken = (0, VerifyJWt_1.createToken)(jwtPayload, config_1.default.refreshSecret, config_1.default.refreshExpiresIn);
