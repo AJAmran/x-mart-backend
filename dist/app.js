@@ -14,7 +14,7 @@ const notFound_1 = __importDefault(require("./middleware/notFound"));
 require("./utils/cronJobs");
 const app = (0, express_1.default)();
 // CORS configuration
-const allowedOrigins = ["http://localhost:3000", "https://yourdomain.com"];
+const allowedOrigins = ["http://localhost:3000", "https://x-mart-client.vercel.app"];
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
