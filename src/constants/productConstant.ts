@@ -1,8 +1,14 @@
 export const PRODUCT_CATEGORY = {
-  ELECTRONICS: "electronics",
-  CLOTHING: "clothing",
-  FURNITURE: "furniture",
-  BOOKS: "books",
+  FISH: "fish",
+  MEAT: "meat",
+  FRUITS: "fruits",
+  VEGETABLES: "vegetables",
+  DAIRY: "dairy",
+  FROZEN: "frozen",
+  GROCERY: "grocery",
+  PERSONAL_CARE: "personal_care",
+  HOUSE_HOLD: "house_hold",
+  STATIONERY: "stationery",
 } as const;
 
 export const PRODUCT_STATUS = {
