@@ -6,8 +6,8 @@ export const PRODUCT_CATEGORY = {
   DAIRY: "dairy",
   FROZEN: "frozen",
   GROCERY: "grocery",
-  PERSONAL_CARE: "personal_care",
-  HOUSE_HOLD: "house_hold",
+  PERSONALCARE: "personalcare",
+  HOUSEHOLD: "household",
   STATIONERY: "stationery",
 } as const;
 
