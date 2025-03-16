@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import AutRoute from "./routes/authRoutes";
 import productRoutes from "./routes/productRoutes";
+import cartRoutes from "./routes/cartRoutes";
 import cookieParser from "cookie-parser";
 import httpStatus from "http-status";
 import globalErrorHandler from "./middleware/globalErrorHandler";
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", AutRoute);
 app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/cart", cartRoutes);
 
 //Testing
 app.get("/", (req: Request, res: Response) => {
