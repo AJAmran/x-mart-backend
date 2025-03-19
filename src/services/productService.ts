@@ -29,11 +29,15 @@ const getAllProducts = async (filters: any, options: any) => {
   // Count total documents for pagination metadata
   const total = await Product.countDocuments(filters);
 
+  // Calculate total pages
+  const totalPages = Math.ceil(total / limit);
+
   return {
     meta: {
       page,
       limit,
       total,
+      totalPages,
     },
     data: result,
   };

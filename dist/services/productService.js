@@ -36,11 +36,14 @@ const getAllProducts = (filters, options) => __awaiter(void 0, void 0, void 0, f
         .limit(limit);
     // Count total documents for pagination metadata
     const total = yield Product_1.Product.countDocuments(filters);
+    // Calculate total pages
+    const totalPages = Math.ceil(total / limit);
     return {
         meta: {
             page,
             limit,
             total,
+            totalPages,
         },
         data: result,
     };
