@@ -4,6 +4,7 @@ import AutRoute from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import cartRoutes from "./routes/cartRoutes";
+import orderRouter from "./routes/orderRoutes";
 import cookieParser from "cookie-parser";
 import httpStatus from "http-status";
 import globalErrorHandler from "./middleware/globalErrorHandler";
@@ -13,7 +14,10 @@ import "./utils/cronJobs";
 const app: Application = express();
 
 // CORS configuration
-const allowedOrigins = ["http://localhost:3000", "https://x-mart-client.vercel.app"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://x-mart-client.vercel.app",
+];
 
 app.use(
   cors({
@@ -24,7 +28,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true, 
+    credentials: true,
   })
 );
 
@@ -36,6 +40,7 @@ app.use("/api/v1/auth", AutRoute);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/orders", orderRouter);
 
 //Testing
 app.get("/", (req: Request, res: Response) => {
