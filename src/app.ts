@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import AutRoute from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
+import branchRoutes from "./routes/branchRoutes";
 import productRoutes from "./routes/productRoutes";
 import cartRoutes from "./routes/cartRoutes";
 import orderRouter from "./routes/orderRoutes";
@@ -38,6 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", AutRoute);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/branches", branchRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/orders", orderRouter);
