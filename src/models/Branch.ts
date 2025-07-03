@@ -6,9 +6,8 @@ const contactSchema = new Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   manager: { type: String },
-  emergencyContact: { type: String }
+  emergencyContact: { type: String },
 });
-
 
 const locationSchema = new Schema({
   address: { type: String, required: true },
@@ -17,9 +16,17 @@ const locationSchema = new Schema({
   country: { type: String, required: true },
   postalCode: { type: String, required: true },
   coordinates: {
-    lat: { type: Number },
-    lng: { type: Number }
-  }
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point",
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
 });
 
 const operatingHoursSchema = new Schema({
@@ -27,7 +34,7 @@ const operatingHoursSchema = new Schema({
   openingTime: { type: String },
   closingTime: { type: String },
   is24Hours: { type: Boolean, default: false },
-  isClosed: { type: Boolean, default: false }
+  isClosed: { type: Boolean, default: false },
 });
 
 const facilitiesSchema = new Schema({
@@ -38,9 +45,8 @@ const facilitiesSchema = new Schema({
   dining: { type: Boolean, default: false },
   atm: { type: Boolean, default: false },
   pharmacy: { type: Boolean, default: false },
-  bakery: { type: Boolean, default: false }
-})
-
+  bakery: { type: Boolean, default: false },
+});
 
 const branchSchema = new Schema<TBranch>(
   {
@@ -50,13 +56,13 @@ const branchSchema = new Schema<TBranch>(
       type: String,
       enum: Object.keys(BRANCH_STATUS) as (keyof typeof BRANCH_STATUS)[],
       default: "ACTIVE",
-      index: true
+      index: true,
     },
     type: {
       type: String,
       enum: Object.keys(BRANCH_TYPE) as (keyof typeof BRANCH_TYPE)[],
       required: true,
-      index: true
+      index: true,
     },
     contact: { type: contactSchema, required: true },
     location: { type: locationSchema, required: true },
@@ -66,15 +72,13 @@ const branchSchema = new Schema<TBranch>(
     size: { type: Number },
     employeeCount: { type: Number },
     description: { type: String },
-    images: { type: [String] }
+    images: { type: [String] },
   },
   { timestamps: true }
 );
 
-
 // Indexes for geospatial queries
 branchSchema.index({ "location.coordinates": "2dsphere" });
 branchSchema.index({ "location.city": 1, "location.state": 1 });
-
 
 export const Branch = model<TBranch>("Branch", branchSchema);

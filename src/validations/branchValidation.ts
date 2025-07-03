@@ -15,8 +15,8 @@ const locationSchema = z.object({
   country: z.string().min(1, { message: "Country is required" }),
   postalCode: z.string().min(1, { message: "Postal code is required" }),
   coordinates: z.object({
-    lat: z.number(),
-    lng: z.number()
+    type: z.literal('Point', { message: "Type must be 'Point'" }),
+    coordinates: z.array(z.number()).length(2, { message: "Coordinates must contain exactly [lng, lat]" })
   }).optional()
 });
 

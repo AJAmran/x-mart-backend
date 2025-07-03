@@ -1,4 +1,8 @@
-import { BRANCH_STATUS, BRANCH_TYPE, OPERATING_HOURS } from "../constants/branchConstant";
+import {
+  BRANCH_STATUS,
+  BRANCH_TYPE,
+  OPERATING_HOURS,
+} from "../constants/branchConstant";
 
 export type TBranchContact = {
   phone: string;
@@ -14,8 +18,8 @@ export type TBranchLocation = {
   country: string;
   postalCode: string;
   coordinates?: {
-    lat: number;
-    lng: number;
+    type: "Point";
+    coordinates: [number, number];
   };
 };
 
@@ -38,7 +42,6 @@ export type TBranchFacilities = {
   bakery?: boolean;
 };
 
-
 export type TBranch = {
   name: string;
   code: string;
@@ -55,4 +58,19 @@ export type TBranch = {
   images?: string[];
   createdAt?: Date;
   updatedAt?: Date;
+};
+
+export type BranchFilters = {
+  searchTerm?: string;
+  status?: string;
+  type?: string;
+  city?: string;
+  state?: string;
+};
+
+export type PaginationOptions = {
+  limit?: number;
+  page?: number;
+  sortBy?: string;
+  sortOrder?: 1 | -1;
 };

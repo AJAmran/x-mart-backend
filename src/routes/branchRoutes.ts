@@ -1,9 +1,9 @@
 import express from "express";
 import { USER_ROLE } from "../constants/userConstant";
-import { BranchControllers } from "../controllers/branchController";
 import auth from "../middleware/authMiddleware";
 import validateRequest from "../middleware/validateRequest";
 import { BranchValidation } from "../validations/branchValidation";
+import { BranchControllers } from "../controllers/branchController";
 
 const router = express.Router();
 
