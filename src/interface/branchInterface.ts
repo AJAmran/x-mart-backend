@@ -49,7 +49,7 @@ export type TBranch = {
   operatingHours: TBranchOperatingHours[];
   facilities?: TBranchFacilities;
   openingDate: Date;
-  size?: number; // in square feet
+  size?: number;
   employeeCount?: number;
   description?: string;
   images?: string[];
