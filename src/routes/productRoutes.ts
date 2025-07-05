@@ -31,10 +31,8 @@ router.delete("/:id", auth(USER_ROLE.ADMIN), ProductControllers.deleteProduct);
 // Advanced filtering
 router.get("/search/advanced", ProductControllers.advancedProductSearch);
 
-// Branch-specific operations
 router.get(
-  "/:branchId",
-  validateRequest(ProductValidation.branchSpecificSchema),
+  "/branch/:branchId",
   ProductControllers.getProductsByBranch
 );
 

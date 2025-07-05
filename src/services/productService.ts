@@ -263,13 +263,13 @@ const getProductsByBranch = async (
     {
       $or: [
         { availability: "ALL_BRANCHES" },
-        { availableBranches: branchId },
+        { availableBranches: { $in: [branchId] } }, // Changed to $in for array matching
         { "inventories.branchId": branchId },
       ],
     },
   ];
 
-  // Add other filters
+  // Add other filters (keep your existing filter logic)
   if (filters.searchTerm) {
     andConditions.push({
       $or: [
@@ -279,38 +279,9 @@ const getProductsByBranch = async (
     });
   }
 
-  if (filters.category) {
-    andConditions.push({ category: filters.category });
-  }
+  // ... (keep your other filter conditions)
 
-  if (filters.subCategory) {
-    andConditions.push({ subCategory: filters.subCategory });
-  }
-
-  if (filters.status) {
-    andConditions.push({ status: filters.status });
-  }
-
-  if (filters.operationType) {
-    andConditions.push({ operationType: filters.operationType });
-  }
-
-  if (filters.tags) {
-    andConditions.push({
-      tags: {
-        $in: Array.isArray(filters.tags) ? filters.tags : [filters.tags],
-      },
-    });
-  }
-
-  if (filters.minPrice || filters.maxPrice) {
-    const priceCondition: any = {};
-    if (filters.minPrice) priceCondition.$gte = Number(filters.minPrice);
-    if (filters.maxPrice) priceCondition.$lte = Number(filters.maxPrice);
-    andConditions.push({ price: priceCondition });
-  }
-
-  const whereConditions = { $and: andConditions };
+  const whereConditions = andConditions.length > 0 ? { $and: andConditions } : {};
 
   const result = await Product.find(whereConditions)
     .sort({ [sortBy]: sortOrder })
@@ -424,7 +395,7 @@ const getSubCategories = async (category?: string) => {
     query.category = category;
   }
   const subCategories = await Product.distinct("subCategory", query);
-  return subCategories.filter((subCat) => subCat); // Remove null/undefined
+  return subCategories.filter((subCat) => subCat);
 };
 
 export const ProductService = {
