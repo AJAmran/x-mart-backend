@@ -5,7 +5,6 @@ import auth from "../middleware/authMiddleware";
 import validateRequest from "../middleware/validateRequest";
 import { ProductValidation } from "../validations/productValidation";
 
-
 const router = express.Router();
 
 // Product CRUD
@@ -29,11 +28,20 @@ router.patch(
 
 router.delete("/:id", auth(USER_ROLE.ADMIN), ProductControllers.deleteProduct);
 
-// Inventory Management
+// Advanced filtering
+router.get("/search/advanced", ProductControllers.advancedProductSearch);
+
+// Branch-specific operations
+router.get(
+  "/:branchId",
+  validateRequest(ProductValidation.branchSpecificSchema),
+  ProductControllers.getProductsByBranch
+);
+
 router.patch(
   "/:id/update-stock",
   auth(USER_ROLE.ADMIN),
-  validateRequest(ProductValidation.updateProductValidationSchema),
+  validateRequest(ProductValidation.updateStockValidationSchema),
   ProductControllers.updateStock
 );
 
@@ -41,7 +49,7 @@ router.patch(
 router.post(
   "/:id/apply-discount",
   auth(USER_ROLE.ADMIN),
-  validateRequest(ProductValidation.createProductValidationSchema),
+  validateRequest(ProductValidation.applyDiscountValidationSchema),
   ProductControllers.applyDiscount
 );
 
@@ -50,5 +58,9 @@ router.delete(
   auth(USER_ROLE.ADMIN),
   ProductControllers.removeDiscount
 );
+
+// Category operations
+router.get("/categories/main", ProductControllers.getMainCategories);
+router.get("/categories/sub", ProductControllers.getSubCategories);
 
 export default router;
