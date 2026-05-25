@@ -9,12 +9,13 @@ import branchRoutes from "./routes/branchRoutes";
 import productRoutes from "./routes/productRoutes";
 import cartRoutes from "./routes/cartRoutes";
 import orderRouter from "./routes/orderRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 import cookieParser from "cookie-parser";
 import httpStatus from "http-status";
 import globalErrorHandler from "./middleware/globalErrorHandler";
 import notFound from "./middleware/notFound";
 import "./utils/cronJobs";
-import { logger, httpLogger } from "./utils/logger";
+import { httpLogger } from "./utils/logger";
 
 const app: Application = express();
 
@@ -75,6 +76,7 @@ app.use("/api/v1/branches", branchRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/orders", orderRouter);
+app.use("/api/v1/payment", paymentRoutes);
 
 //Testing
 app.get("/", (req: Request, res: Response) => {

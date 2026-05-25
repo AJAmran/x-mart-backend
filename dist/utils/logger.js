@@ -8,8 +8,8 @@ const pino_1 = __importDefault(require("pino"));
 const pino_http_1 = __importDefault(require("pino-http"));
 const config_1 = __importDefault(require("../config"));
 exports.logger = (0, pino_1.default)({
-    level: config_1.default.NODE_ENV === "production" ? "info" : "debug",
-    transport: config_1.default.NODE_ENV !== "production"
+    level: config_1.default.nodeEnv === "production" ? "info" : "debug",
+    transport: config_1.default.nodeEnv !== "production"
         ? { target: "pino/file", options: { destination: 1 } }
         : undefined,
     redact: ["req.headers.authorization", "req.headers.cookie", "body.password"],

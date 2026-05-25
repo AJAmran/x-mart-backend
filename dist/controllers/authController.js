@@ -11,7 +11,7 @@ const sendResponse_1 = __importDefault(require("../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const setRefreshTokenCookie = (res, refreshToken) => {
     res.cookie("refreshToken", refreshToken, {
-        secure: config_1.default.NODE_ENV === "production",
+        secure: config_1.default.nodeEnv === "production",
         httpOnly: true,
         sameSite: "strict",
         path: "/api/v1/auth",

@@ -3,9 +3,9 @@ import pinoHttp from "pino-http";
 import config from "../config";
 
 export const logger = pino({
-  level: config.NODE_ENV === "production" ? "info" : "debug",
+  level: config.nodeEnv === "production" ? "info" : "debug",
   transport:
-    config.NODE_ENV !== "production"
+    config.nodeEnv !== "production"
       ? { target: "pino/file", options: { destination: 1 } }
       : undefined,
   redact: ["req.headers.authorization", "req.headers.cookie", "body.password"],

@@ -22,6 +22,7 @@ const createOrder = async (userId, payload) => {
     }
     // Calculate total price
     const totalPrice = payload.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const isOnlinePayment = payload.paymentMethod === "ONLINE";
     // Create order
     const order = await Order_1.Order.create({
         userId,
@@ -29,22 +30,34 @@ const createOrder = async (userId, payload) => {
         shippingInfo: payload.shippingInfo,
         totalPrice,
         paymentMethod: payload.paymentMethod,
-        status: orderInterface_1.ORDER_STATUS.PENDING,
+        status: isOnlinePayment ? orderInterface_1.ORDER_STATUS.PENDING : orderInterface_1.ORDER_STATUS.PENDING,
         trackingHistory: [
             {
                 status: orderInterface_1.ORDER_STATUS.PENDING,
                 updatedAt: new Date(),
-                note: "Order placed",
+                note: isOnlinePayment ? "Awaiting payment" : "Order placed",
             },
         ],
     });
-    // Update stock
-    for (const item of payload.items) {
+    // Deduct stock only for COD orders; online payment stock is deducted on payment success
+    if (!isOnlinePayment) {
+        for (const item of payload.items) {
+            await Product_1.Product.findByIdAndUpdate(item.productId, {
+                $inc: { stock: -item.quantity },
+            });
+        }
+    }
+    return order;
+};
+const confirmPaymentAndDeductStock = async (orderId) => {
+    const order = await Order_1.Order.findById(orderId);
+    if (!order)
+        throw new AppErros_1.default(http_status_1.default.NOT_FOUND, "Order not found");
+    for (const item of order.items) {
         await Product_1.Product.findByIdAndUpdate(item.productId, {
             $inc: { stock: -item.quantity },
         });
     }
-    return order;
 };
 const getAllOrders = async (filters, options) => {
     const { page, limit, sortBy, sortOrder } = options;
@@ -120,6 +133,7 @@ const cancelOrder = async (id, userId) => {
 };
 exports.OrderService = {
     createOrder,
+    confirmPaymentAndDeductStock,
     getAllOrders,
     getOrderById,
     getUserOrders,

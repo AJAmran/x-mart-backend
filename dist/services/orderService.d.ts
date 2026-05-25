@@ -5,6 +5,7 @@ export declare const OrderService: {
     } & {
         __v: number;
     }>;
+    confirmPaymentAndDeductStock: (orderId: string) => Promise<void>;
     getAllOrders: (filters: any, options: any) => Promise<{
         meta: {
             page: any;

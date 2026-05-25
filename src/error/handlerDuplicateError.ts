@@ -21,7 +21,7 @@ const handleDuplicateError = (err: any): TGenericErrorResponse => {
 
   return {
     statusCode,
-    message: "Invalid ID",
+    message: "Resource Already Exists",
     errorSources,
   };
 };

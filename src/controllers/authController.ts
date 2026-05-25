@@ -6,7 +6,7 @@ import httpStatus from "http-status";
 
 const setRefreshTokenCookie = (res: any, refreshToken: string) => {
   res.cookie("refreshToken", refreshToken, {
-    secure: config.NODE_ENV === "production",
+    secure: config.nodeEnv === "production",
     httpOnly: true,
     sameSite: "strict",
     path: "/api/v1/auth",
