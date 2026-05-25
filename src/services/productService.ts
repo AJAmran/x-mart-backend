@@ -1,50 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { TProduct } from "../interface/productInterface";
-import { Product } from "../models/Product";
+import { productRepository } from "../repositories/product.repository";
 import AppError from "../error/AppErros";
 
 const createProduct = async (payload: TProduct) => {
-  const result = await Product.create(payload);
-  return result;
+  return productRepository.create(payload);
 };
 
 const getAllProducts = async (filters: any, options: any) => {
-  const { page, limit, sortBy, sortOrder } = options;
-
-  // Calculate skip for pagination
-  const skip = (page - 1) * limit;
-
-  // Build sort criteria
-  const sortCriteria: { [key: string]: 1 | -1 } = {
-    [sortBy]: sortOrder === "desc" ? -1 : 1,
-  };
-
-  // Fetch products with filters, sorting, and pagination
-  const result = await Product.find(filters)
-    .sort(sortCriteria)
-    .skip(skip)
-    .limit(limit);
-
-  // Count total documents for pagination metadata
-  const total = await Product.countDocuments(filters);
-
-  // Calculate total pages
-  const totalPages = Math.ceil(total / limit);
-
-  return {
-    meta: {
-      page,
-      limit,
-      total,
-      totalPages,
-    },
-    data: result,
-  };
+  const { page = 1, limit = 10, sortBy = "createdAt", sortOrder = "desc" } = options;
+  return productRepository.findAll(filters, { page, limit, sortBy, sortOrder });
 };
 
 const getProductById = async (id: string) => {
-  const result = await Product.findById(id);
+  const result = await productRepository.findById(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }
@@ -52,7 +21,7 @@ const getProductById = async (id: string) => {
 };
 
 const updateProduct = async (id: string, payload: Partial<TProduct>) => {
-  const result = await Product.findByIdAndUpdate(id, payload, { new: true });
+  const result = await productRepository.update(id, payload);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }
@@ -60,7 +29,7 @@ const updateProduct = async (id: string, payload: Partial<TProduct>) => {
 };
 
 const deleteProduct = async (id: string) => {
-  const result = await Product.findByIdAndDelete(id);
+  const result = await productRepository.delete(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }
@@ -68,7 +37,7 @@ const deleteProduct = async (id: string) => {
 };
 
 const updateStock = async (id: string, stock: number) => {
-  const result = await Product.findByIdAndUpdate(id, { stock }, { new: true });
+  const result = await productRepository.updateStock(id, stock);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }
@@ -76,11 +45,7 @@ const updateStock = async (id: string, stock: number) => {
 };
 
 const applyDiscount = async (id: string, discount: any) => {
-  const result = await Product.findByIdAndUpdate(
-    id,
-    { discount },
-    { new: true }
-  );
+  const result = await productRepository.applyDiscount(id, discount);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }
@@ -88,11 +53,7 @@ const applyDiscount = async (id: string, discount: any) => {
 };
 
 const removeDiscount = async (id: string) => {
-  const result = await Product.findByIdAndUpdate(
-    id,
-    { $unset: { discount: 1 } },
-    { new: true }
-  );
+  const result = await productRepository.removeDiscount(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }

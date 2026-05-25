@@ -53,6 +53,11 @@ const userSchema = new Schema<TUser, IUserModel>(
   }
 );
 
+// Indexes
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ role: 1 });
+userSchema.index({ status: 1 });
+
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this; // doc

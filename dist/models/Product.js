@@ -34,3 +34,4 @@ productSchema.index({ category: 1 });
 productSchema.index({ price: 1 });
 productSchema.index({ stock: 1 });
 exports.Product = (0, mongoose_1.model)("Product", productSchema);
+//# sourceMappingURL=Product.js.map

@@ -21,3 +21,4 @@ const verifyToken = (token, secret) => {
     }
 };
 exports.verifyToken = verifyToken;
+//# sourceMappingURL=VerifyJWt.js.map

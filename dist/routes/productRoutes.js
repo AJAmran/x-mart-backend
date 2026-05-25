@@ -22,3 +22,4 @@ router.patch("/:id/update-stock", (0, authMiddleware_1.default)(userConstant_1.U
 router.post("/:id/apply-discount", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(productValidation_1.ProductValidation.createProductValidationSchema), productController_1.ProductControllers.applyDiscount);
 router.delete("/:id/remove-discount", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), productController_1.ProductControllers.removeDiscount);
 exports.default = router;
+//# sourceMappingURL=productRoutes.js.map

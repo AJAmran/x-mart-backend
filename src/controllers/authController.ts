@@ -4,37 +4,37 @@ import { catchAsync } from "../utils/catchAsync";
 import sendResponse from "../utils/sendResponse";
 import httpStatus from "http-status";
 
-const registerUser = catchAsync(async (req, res) => {
-  const result = await AuthService.registerUser(req.body);
-  const { accessToken, refreshToken } = result;
-
+const setRefreshTokenCookie = (res: any, refreshToken: string) => {
   res.cookie("refreshToken", refreshToken, {
     secure: config.NODE_ENV === "production",
     httpOnly: true,
+    sameSite: "strict",
+    path: "/api/v1/auth",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
+};
+
+const registerUser = catchAsync(async (req, res) => {
+  const result = await AuthService.registerUser(req.body);
+  setRefreshTokenCookie(res, result.refreshToken);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User registered successfully",
-    data: { accessToken, refreshToken },
+    data: { accessToken: result.accessToken },
   });
 });
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUser(req.body);
-  const { accessToken, refreshToken } = result;
-
-  res.cookie("refreshToken", refreshToken, {
-    secure: config.NODE_ENV === "production",
-    httpOnly: true,
-  });
+  setRefreshTokenCookie(res, result.refreshToken);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User logged in successfully",
-    data: { accessToken, refreshToken },
+    data: { accessToken: result.accessToken },
   });
 });
 

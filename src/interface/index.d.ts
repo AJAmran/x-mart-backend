@@ -7,6 +7,5 @@ declare global {
     }
   }
 }
-if (user) {
-  throw new AppError(httpStatus.NOT_FOUND, 'This user is already exist!');
-}
+
+export {};

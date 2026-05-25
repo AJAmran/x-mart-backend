@@ -63,3 +63,4 @@ exports.ProductValidation = {
     updateStockValidationSchema,
     applyDiscountValidationSchema,
 };
+//# sourceMappingURL=productValidation.js.map

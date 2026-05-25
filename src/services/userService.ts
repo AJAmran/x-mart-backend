@@ -2,10 +2,48 @@ import { USER_ROLE, USER_STATUS } from "../constants/userConstant";
 import AppError from "../error/AppErros";
 import { User } from "../models/User";
 import httpStatus from "http-status";
+import { paginationHelpers } from "../utils/paginationHelpers";
 
-const getAllUsers = async () => {
-  const result = await User.find().select("-password -passwordChangedAt");
-  return result;
+const getAllUsers = async (
+  filters: { search?: string; status?: string; role?: string },
+  options: { page?: number; limit?: number; sortBy?: string; sortOrder?: "asc" | "desc" }
+) => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(options);
+
+  const query: any = {};
+  if (filters.search) {
+    query.$or = [
+      { name: { $regex: filters.search, $options: "i" } },
+      { email: { $regex: filters.search, $options: "i" } },
+      { mobileNumber: { $regex: filters.search, $options: "i" } },
+    ];
+  }
+  if (filters.status) {
+    query.status = filters.status.toUpperCase();
+  }
+  if (filters.role) {
+    query.role = filters.role.toUpperCase();
+  }
+
+  const [result, total] = await Promise.all([
+    User.find(query)
+      .select("-password -passwordChangedAt")
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(limit),
+    User.countDocuments(query),
+  ]);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+    data: result,
+  };
 };
 
 const getUserById = async (id: string) => {

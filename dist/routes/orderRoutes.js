@@ -23,3 +23,4 @@ router.patch("/:id/status", (0, authMiddleware_1.default)(userConstant_1.USER_RO
 // Cancel order (Order owner)
 router.patch("/:id/cancel", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.USER), orderController_1.OrderControllers.cancelOrder);
 exports.default = router;
+//# sourceMappingURL=orderRoutes.js.map

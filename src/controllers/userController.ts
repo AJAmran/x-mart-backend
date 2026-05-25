@@ -3,13 +3,18 @@ import { catchAsync } from "../utils/catchAsync";
 import sendResponse from "../utils/sendResponse";
 import httpStatus from "http-status";
 
+import pick from "../utils/pick";
+
 const getAllUsers = catchAsync(async (req, res) => {
-  const result = await UserService.getAllUsers();
+  const filters = pick(req.query, ["search", "status", "role"]);
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+  const result = await UserService.getAllUsers(filters, options);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Users retrieved successfully",
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 

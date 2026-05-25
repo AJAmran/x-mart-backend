@@ -52,3 +52,4 @@ orderSchema.index({ userId: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ createdAt: -1 });
 exports.Order = (0, mongoose_1.model)("Order", orderSchema);
+//# sourceMappingURL=Order.js.map
