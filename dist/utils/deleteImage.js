@@ -21,3 +21,4 @@ const deleteImageFromCloudinary = (files) => {
     });
 };
 exports.deleteImageFromCloudinary = deleteImageFromCloudinary;
+//# sourceMappingURL=deleteImage.js.map

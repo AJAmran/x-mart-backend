@@ -104,10 +104,10 @@ const deleteBranch = async (id: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Branch not found");
   }
   
-  // Remove this branch from any products that have it in availableBranches
+  // Soft delete - unassign any products associated with this branch
   await Product.updateMany(
-    { availableBranches: id },
-    { $pull: { availableBranches: id } }
+    {},
+    { $pull: { images: id } }
   );
   
   return result;

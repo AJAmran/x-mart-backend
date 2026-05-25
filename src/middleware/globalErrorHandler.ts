@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 import { ErrorRequestHandler } from "express";
+import { logger } from "../utils/logger";
 import { TErrorSources } from "../interface/errorInterface";
 import { deleteImageFromCloudinary } from "../utils/deleteImage";
 import { ZodError } from "zod";
@@ -67,13 +68,14 @@ const globalErrorHandler: ErrorRequestHandler = async (err, req, res, next) => {
     ];
   }
 
-  //ultimate return
+  logger.error({ err, statusCode, message }, "Global error handler");
+
   return res.status(statusCode).json({
     success: false,
     message,
     errorSources,
     err,
-    stack: config.NODE_ENV === "development" ? err?.stack : null,
+    stack: config.nodeEnv === "development" ? err?.stack : null,
   });
 };
 

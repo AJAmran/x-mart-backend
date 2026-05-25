@@ -38,3 +38,4 @@ router.post("/login", (0, validateRequest_1.default)(authValidation_1.AuthValida
 router.post("/change-password", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.USER, userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(authValidation_1.AuthValidation.changePasswordValidationSchema), authController_1.AuthControllers.changePassword);
 router.post("/refresh-token", (0, validateRequest_1.validateRequestCookies)(authValidation_1.AuthValidation.refreshTokenValidationSchema), authController_1.AuthControllers.refreshToken);
 exports.default = router;
+//# sourceMappingURL=authRoutes.js.map

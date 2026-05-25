@@ -14,8 +14,9 @@ const handleDuplicateError = (err) => {
     const statusCode = 400;
     return {
         statusCode,
-        message: "Invalid ID",
+        message: "Resource Already Exists",
         errorSources,
     };
 };
 exports.default = handleDuplicateError;
+//# sourceMappingURL=handlerDuplicateError.js.map

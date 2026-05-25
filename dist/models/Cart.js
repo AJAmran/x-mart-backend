@@ -16,3 +16,4 @@ const cartSchema = new mongoose_1.Schema({
     totalItems: { type: Number, required: true, min: 0 },
 }, { timestamps: true });
 exports.Cart = (0, mongoose_1.model)("Cart", cartSchema);
+//# sourceMappingURL=Cart.js.map

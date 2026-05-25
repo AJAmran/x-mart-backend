@@ -9,3 +9,4 @@ var ORDER_STATUS;
     ORDER_STATUS["DELIVERED"] = "DELIVERED";
     ORDER_STATUS["CANCELLED"] = "CANCELLED";
 })(ORDER_STATUS || (exports.ORDER_STATUS = ORDER_STATUS = {}));
+//# sourceMappingURL=orderInterface.js.map

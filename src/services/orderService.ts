@@ -28,6 +28,8 @@ const createOrder = async (userId: string, payload: Partial<TOrder>) => {
     0
   );
 
+  const isOnlinePayment = payload.paymentMethod === "ONLINE";
+
   // Create order
   const order = await Order.create({
     userId,
@@ -35,24 +37,37 @@ const createOrder = async (userId: string, payload: Partial<TOrder>) => {
     shippingInfo: payload.shippingInfo,
     totalPrice,
     paymentMethod: payload.paymentMethod,
-    status: ORDER_STATUS.PENDING,
+    status: isOnlinePayment ? ORDER_STATUS.PENDING : ORDER_STATUS.PENDING,
     trackingHistory: [
       {
         status: ORDER_STATUS.PENDING,
         updatedAt: new Date(),
-        note: "Order placed",
+        note: isOnlinePayment ? "Awaiting payment" : "Order placed",
       },
     ],
   });
 
-  // Update stock
-  for (const item of payload.items!) {
+  // Deduct stock only for COD orders; online payment stock is deducted on payment success
+  if (!isOnlinePayment) {
+    for (const item of payload.items!) {
+      await Product.findByIdAndUpdate(item.productId, {
+        $inc: { stock: -item.quantity },
+      });
+    }
+  }
+
+  return order;
+};
+
+const confirmPaymentAndDeductStock = async (orderId: string) => {
+  const order = await Order.findById(orderId);
+  if (!order) throw new AppError(httpStatus.NOT_FOUND, "Order not found");
+
+  for (const item of order.items) {
     await Product.findByIdAndUpdate(item.productId, {
       $inc: { stock: -item.quantity },
     });
   }
-
-  return order;
 };
 
 const getAllOrders = async (filters: any, options: any) => {
@@ -159,6 +174,7 @@ const cancelOrder = async (id: string, userId: string) => {
 
 export const OrderService = {
   createOrder,
+  confirmPaymentAndDeductStock,
   getAllOrders,
   getOrderById,
   getUserOrders,

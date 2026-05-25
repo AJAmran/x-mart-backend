@@ -17,3 +17,4 @@ exports.PRODUCT_STATUS = {
     ACTIVE: "active",
     INACTIVE: "inactive",
 };
+//# sourceMappingURL=productConstant.js.map

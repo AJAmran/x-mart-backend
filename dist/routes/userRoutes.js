@@ -17,3 +17,4 @@ router.delete("/:id", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADM
 router.patch("/:id/status", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(userValidation_1.UserValidation.updateStatusValidationSchema), userController_1.UserControllers.updateUserStatus);
 router.patch("/:id/role", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(userValidation_1.UserValidation.updateRoleValidationSchema), userController_1.UserControllers.updateUserRole);
 exports.default = router;
+//# sourceMappingURL=userRoutes.js.map

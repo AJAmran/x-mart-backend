@@ -12,3 +12,4 @@ const notFound = (req, res, next) => {
     });
 };
 exports.default = notFound;
+//# sourceMappingURL=notFound.js.map

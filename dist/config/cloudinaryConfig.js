@@ -12,3 +12,4 @@ cloudinary_1.v2.config({
     api_secret: _1.default.cloudinary_api_secret,
 });
 exports.cloudinaryUpload = cloudinary_1.v2;
+//# sourceMappingURL=cloudinaryConfig.js.map
