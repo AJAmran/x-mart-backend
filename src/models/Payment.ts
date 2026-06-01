@@ -18,7 +18,6 @@ const paymentSchema = new Schema<TPayment>(
   { timestamps: true }
 );
 
-paymentSchema.index({ tranId: 1 });
 paymentSchema.index({ orderId: 1 });
 
 export const Payment = model<TPayment>("Payment", paymentSchema);

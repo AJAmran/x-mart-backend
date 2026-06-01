@@ -15,7 +15,6 @@ const paymentSchema = new mongoose_1.Schema({
     paymentMethod: { type: String, default: "sslcommerz" },
     gatewayData: { type: mongoose_1.Schema.Types.Mixed },
 }, { timestamps: true });
-paymentSchema.index({ tranId: 1 });
 paymentSchema.index({ orderId: 1 });
 exports.Payment = (0, mongoose_1.model)("Payment", paymentSchema);
 //# sourceMappingURL=Payment.js.map
