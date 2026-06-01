@@ -22,6 +22,8 @@ const notFound_1 = __importDefault(require("./middleware/notFound"));
 require("./utils/cronJobs");
 const logger_1 = require("./utils/logger");
 const app = (0, express_1.default)();
+// Trust proxy for Vercel deployment (necessary for express-rate-limit)
+app.set("trust proxy", true);
 // Security headers
 app.use((0, helmet_1.default)());
 // Request logging

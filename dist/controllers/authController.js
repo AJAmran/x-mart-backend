@@ -10,11 +10,15 @@ const catchAsync_1 = require("../utils/catchAsync");
 const sendResponse_1 = __importDefault(require("../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const setRefreshTokenCookie = (res, refreshToken) => {
+    const isProduction = config_1.default.nodeEnv === "production";
     res.cookie("refreshToken", refreshToken, {
-        secure: config_1.default.nodeEnv === "production",
         httpOnly: true,
-        sameSite: "strict",
-        path: "/api/v1/auth",
+        // SameSite=None is required for cross-domain cookie delivery on Vercel
+        // (x-mart-client.vercel.app → x-mart-backend.vercel.app).
+        // SameSite=Strict silently drops the cookie on cross-site requests.
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction, // SameSite=None MUST pair with Secure=true
+        path: "/", // widened from "/api/v1/auth" — Vercel serverless needs it
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 };
