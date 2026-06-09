@@ -35,8 +35,8 @@ const deleteProduct = async (id) => {
     }
     return result;
 };
-const updateStock = async (id, stock) => {
-    const result = await product_repository_1.productRepository.updateStock(id, stock);
+const updateStock = async (id, branchId, stock) => {
+    const result = await product_repository_1.productRepository.updateStock(id, branchId, stock);
     if (!result) {
         throw new AppErros_1.default(http_status_1.default.NOT_FOUND, "Product not found");
     }

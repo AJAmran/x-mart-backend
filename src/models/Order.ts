@@ -1,19 +1,21 @@
 import { model, Schema } from "mongoose";
 import { ORDER_STATUS, TOrder } from "../interface/orderInterface";
 
+const orderItemSchema = new Schema(
+  {
+    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    quantity: { type: Number, required: true, min: 1 },
+    price: { type: Number, required: true, min: 0 },
+    name: { type: String, required: true },
+    image: { type: String, required: true },
+  },
+  { _id: false }
+);
 
 const orderSchema = new Schema<TOrder>(
   {
-    userId: { type: String, required: true },
-    items: [
-      {
-        productId: { type: String, required: true },
-        quantity: { type: Number, required: true, min: 1 },
-        price: { type: Number, required: true, min: 0 },
-        name: { type: String, required: true },
-        image: { type: String, required: true },
-      },
-    ],
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    items: { type: [orderItemSchema], required: true, validate: (v: unknown[]) => v.length > 0 },
     shippingInfo: {
       name: { type: String, required: true },
       email: { type: String, required: true },
@@ -35,6 +37,8 @@ const orderSchema = new Schema<TOrder>(
       enum: ["CASH_ON_DELIVERY", "ONLINE"],
       required: true,
     },
+    stockDeducted: { type: Boolean, default: false },
+    idempotencyKey: { type: String, unique: true, sparse: true },
     trackingHistory: [
       {
         status: {
@@ -50,9 +54,11 @@ const orderSchema = new Schema<TOrder>(
   { timestamps: true }
 );
 
-// Indexes for performance
-orderSchema.index({ userId: 1 });
-orderSchema.index({ status: 1 });
+// Compound + single-field indexes for production query patterns
+orderSchema.index({ userId: 1, createdAt: -1 });
+orderSchema.index({ userId: 1, status: 1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ "items.productId": 1 });
 orderSchema.index({ createdAt: -1 });
 
 export const Order = model<TOrder>("Order", orderSchema);

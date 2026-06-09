@@ -1,4 +1,4 @@
-import { USER_ROLE } from "../constants/userConstant";
+import { USER_ROLE, USER_STATUS } from "../constants/userConstant";
 import { TLoginUser, TRegisterUser } from "../interface/authInterface";
 import { User } from "../models/User";
 import httpStatus from "http-status";
@@ -8,125 +8,124 @@ import AppError from "../error/AppErros";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-const registerUser = async (payload: TRegisterUser) => {
-  // checking if the user is exist
-  const user = await User.isUserExistsByEmail(payload?.email);
+type JwtRole = keyof typeof USER_ROLE;
+type JwtStatus = keyof typeof USER_STATUS;
 
-  if (user) {
-    throw new AppError(httpStatus.NOT_FOUND, "This user is already exist!");
+type AnyUser = {
+  _id?: unknown;
+  name: string;
+  email: string;
+  mobileNumber?: string;
+  role: string;
+  status: string;
+  profilePhoto?: string | null;
+};
+
+const toRole = (r: string): JwtRole => (r in USER_ROLE ? (r as JwtRole) : USER_ROLE.USER);
+const toStatus = (s: string): JwtStatus => (s in USER_STATUS ? (s as JwtStatus) : USER_STATUS.ACTIVE);
+
+const buildJwtPayload = (user: AnyUser) => ({
+  _id: String(user._id),
+  name: user.name,
+  email: user.email,
+  mobileNumber: user.mobileNumber ?? "",
+  role: toRole(user.role),
+  status: toStatus(user.status),
+  profilePhoto: user.profilePhoto ?? null,
+});
+
+type SignablePayload = {
+  _id?: string;
+  name: string;
+  email: string;
+  mobileNumber?: string;
+  role: JwtRole;
+  status: JwtStatus;
+};
+
+const signTokens = (payload: SignablePayload) => ({
+  accessToken: createToken(payload, config.jwtSecret as string, config.jwtExpiresIn as string),
+  refreshToken: createToken(payload, config.refreshSecret as string, config.refreshExpiresIn as string),
+});
+
+const stripUser = (user: AnyUser) => ({
+  _id: String(user._id),
+  name: user.name,
+  email: user.email,
+  mobileNumber: user.mobileNumber ?? "",
+  role: user.role,
+  status: user.status,
+  profilePhoto: user.profilePhoto ?? null,
+});
+
+const registerUser = async (payload: TRegisterUser) => {
+  // The User model already enforces unique email (lowercased) and unique mobile.
+  // We double-check defensively for clearer error messages.
+  const existing = await User.findOne({ email: payload.email.toLowerCase() });
+  if (existing) {
+    throw new AppError(httpStatus.CONFLICT, "An account with this email already exists");
   }
 
-  payload.role = USER_ROLE.USER;
+  const newUser = await User.create({
+    ...payload,
+    role: USER_ROLE.USER,
+    email: payload.email.toLowerCase(),
+  });
 
-  //create new user
-  const newUser = await User.create(payload);
+  const payloadJwt = buildJwtPayload(newUser);
+  const tokens = signTokens(payloadJwt);
 
-  //create token and sent to the  client
-
-  const jwtPayload = {
-    _id: newUser._id,
-    name: newUser.name,
-    email: newUser.email,
-    mobileNumber: newUser.mobileNumber,
-    role: newUser.role,
-    status: newUser.status,
-    profilePhoto: newUser.profilePhoto,
-  };
-
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwtSecret as string,
-    config.jwtExpiresIn as string
-  );
-
-  const refreshToken = createToken(
-    jwtPayload,
-    config.refreshSecret as string,
-    config.refreshExpiresIn as string
-  );
-
-  return { accessToken, refreshToken };
+  return { ...tokens, user: stripUser(newUser) };
 };
 
 const loginUser = async (payload: TLoginUser) => {
-  // check if the user is exist
   const user = await User.isUserExistsByEmail(payload.email);
-
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
   }
-
-  // check if the user is blocked
 
   if (user.status === "BLOCKED") {
-    throw new AppError(httpStatus.FORBIDDEN, "This user is blocked!");
+    throw new AppError(httpStatus.FORBIDDEN, "This account is blocked");
   }
 
-  // check if the password is correct
-  if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Password is incorrect!");
+  if (!(await User.isPasswordMatched(payload.password, user.password))) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
   }
 
-  const jwtPayload = {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    mobileNumber: user.mobileNumber,
-    role: user.role,
-    status: user.status,
-    profilePhoto: user.profilePhoto,
-  };
+  const payloadJwt = buildJwtPayload(user);
+  const tokens = signTokens(payloadJwt);
 
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwtSecret as string,
-    config.jwtExpiresIn as string
-  );
-
-  const refreshToken = createToken(
-    jwtPayload,
-    config.refreshSecret as string,
-    config.refreshExpiresIn as string
-  );
-
-  return { accessToken, refreshToken };
+  return { ...tokens, user: stripUser(user) };
 };
 
 const changePassword = async (
   userData: JwtPayload,
   payload: { oldPassword: string; newPassword: string }
 ) => {
-  // checking if the user is exist
+  if (!userData?.email) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized");
+  }
+
   const user = await User.isUserExistsByEmail(userData.email);
-
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  // checking if the user is blocked
-
-  const userStatus = user?.status;
-
-  if (userStatus === "BLOCKED") {
-    throw new AppError(httpStatus.FORBIDDEN, "This user is blocked!");
+  if (user.status === "BLOCKED") {
+    throw new AppError(httpStatus.FORBIDDEN, "This account is blocked");
   }
 
-  //checking if the password is correct
+  if (!(await User.isPasswordMatched(payload.oldPassword, user.password))) {
+    throw new AppError(httpStatus.FORBIDDEN, "Current password is incorrect");
+  }
 
-  if (!(await User.isPasswordMatched(payload.oldPassword, user?.password)))
-    throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
-
-  //hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.bcrypt_salt_rounds)
   );
 
   await User.findOneAndUpdate(
-    {
-      email: userData.email,
-      role: userData.role,
-    },
+    { email: userData.email },
     {
       password: newHashedPassword,
       passwordChangedAt: new Date(),
@@ -137,53 +136,42 @@ const changePassword = async (
 };
 
 const refreshToken = async (token: string) => {
-  const decoded = jwt.verify(
-    token,
-    config.refreshSecret as string
-  ) as JwtPayload;
-
-  const { email, iat } = decoded;
-
-  // checking if the user is exist
-  const user = await User.isUserExistsByEmail(email);
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "This user is not found");
+  let decoded: JwtPayload;
+  try {
+    decoded = jwt.verify(token, config.refreshSecret as string) as JwtPayload;
+  } catch (err) {
+    const code = (err as { name?: string }).name;
+    if (code === "TokenExpiredError") {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token expired");
+    }
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid refresh token");
   }
 
-  // checking if the user is blocked
+  const { email } = decoded;
+  if (!email) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid token payload");
+  }
 
-  const userStatus = user?.status;
+  const user = await User.isUserExistsByEmail(email);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
 
-  if (userStatus === "BLOCKED") {
-    throw new AppError(httpStatus.FORBIDDEN, " This user is blocked");
+  if (user.status === "BLOCKED") {
+    throw new AppError(httpStatus.FORBIDDEN, "This account is blocked");
   }
 
   if (
     user.passwordChangedAt &&
-    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
+    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, decoded.iat as number)
   ) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Access Denied");
+    throw new AppError(httpStatus.UNAUTHORIZED, "Token revoked: password changed");
   }
 
-  const jwtPayload = {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    mobileNumber: user.mobileNumber,
-    role: user.role,
-    status: user.status,
-  };
+  const payloadJwt = buildJwtPayload(user);
+  const tokens = signTokens(payloadJwt);
 
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwtSecret as string,
-    config.jwtExpiresIn as string
-  );
-
-  return {
-    accessToken,
-  };
+  return { ...tokens, user: stripUser(user) };
 };
 
 export const AuthService = {

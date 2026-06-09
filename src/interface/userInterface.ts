@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Model } from "mongoose";
 import { USER_ROLE, USER_STATUS } from "../constants/userConstant";
 
@@ -17,11 +16,9 @@ export type TUser = {
 };
 
 export interface IUserModel extends Model<TUser> {
-  isUserExistsByEmail(id: string): Promise<TUser>;
-  isPasswordMatched(
-    plainTextPassword: string,
-    hashedPassword: string
-  ): Promise<boolean>;
+  isUserExistsByEmail(email: string): Promise<TUser | null>;
+  isUserExistsById(id: string): Promise<TUser | null>;
+  isPasswordMatched(plain: string, hashed: string): Promise<boolean>;
   isJWTIssuedBeforePasswordChanged(
     passwordChangedTimestamp: Date,
     jwtIssuedTimestamp: number

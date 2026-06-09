@@ -147,6 +147,10 @@ Base URL: `/api/v1`
 | `JWT_SECRET` | ✅ | — | JWT signing secret |
 | `JWT_EXPIRES_IN` | ✅ | `7d` | Access token expiry |
 | `JWT_REFRESH_SECRET` | ✅ | — | Refresh token secret |
+| `ADMIN_EMAIL` | — | — | Admin email (for seeding) |
+| `ADMIN_PASSWORD` | — | — | Admin password (for seeding) |
+| `ADMIN_PROFILE_PHOTO` | — | — | Admin profile photo URL |
+| `ADMIN_MOBILE_NUMBER` | — | — | Admin mobile number |
 | `SSL_STORE_ID` | ✅* | — | SSLCommerz store ID |
 | `SSL_STORE_PASSWORD` | ✅* | — | SSLCommerz password |
 | `BACKEND_URL` | — | `http://localhost:5000` | Backend base URL |
@@ -230,6 +234,48 @@ npm run lint:fix
 | `npm start` | Production start |
 | `npm run lint` | ESLint check |
 | `npm run lint:fix` | ESLint auto-fix |
+| `npm run seed` | Seed admin + sample users |
+| `npm run seed:admin` | Seed admin only |
+| `npm run seed:users` | Seed sample users only |
+
+---
+
+## Seeding
+
+Populate the database with test data for development.
+
+### Prerequisites
+
+Set the following in your `.env`:
+
+```env
+ADMIN_EMAIL=admin@xmart.com
+ADMIN_PASSWORD=Admin@123
+ADMIN_MOBILE_NUMBER=+8801999999999
+ADMIN_PROFILE_PHOTO=
+```
+
+### Run
+
+```bash
+npm run seed
+```
+
+This seeds:
+
+| Entity | Details |
+|--------|---------|
+| **Admin** | One admin user from env vars (`ADMIN_EMAIL` / `ADMIN_PASSWORD`) |
+| **Sample Users** | 20 users (19 regular + 1 additional admin) with Bangladeshi names and `+880` mobile numbers |
+
+> Idempotent — safe to run multiple times. Admin profile fields are updated on re-run; sample users are skipped if they already exist.
+
+### Selective Seeding
+
+```bash
+npm run seed:admin   # Only seed/reset the admin user
+npm run seed:users   # Only seed sample users
+```
 
 ---
 

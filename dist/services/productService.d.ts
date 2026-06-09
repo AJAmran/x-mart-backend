@@ -8,7 +8,7 @@ export declare const ProductService: {
     getProductById: (id: string) => Promise<TProduct>;
     updateProduct: (id: string, payload: Partial<TProduct>) => Promise<TProduct>;
     deleteProduct: (id: string) => Promise<TProduct>;
-    updateStock: (id: string, stock: number) => Promise<TProduct>;
+    updateStock: (id: string, branchId: string, stock: number) => Promise<TProduct>;
     applyDiscount: (id: string, discount: any) => Promise<TProduct>;
     removeDiscount: (id: string) => Promise<TProduct>;
 };

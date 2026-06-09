@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "scripts": {
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
@@ -10,6 +13,9 @@
     "vercel-build": "npm run build",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint src --fix",
+    "seed": "tsx src/seed/seed.ts",
+    "seed:admin": "tsx src/seed/seed.ts --admin",
+    "seed:users": "tsx src/seed/seed.ts --users",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -26,8 +32,8 @@
     "helmet": "^8.0.0",
     "http-status": "^1.8.1",
     "jsonwebtoken": "^9.0.2",
+    "lru-cache": "^11.0.2",
     "mongoose": "^8.5.4",
-    "node-cron": "^4.2.1",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
     "sslcommerz-lts": "^1.2.0",
@@ -45,7 +51,6 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/multer": "^2.1.0",
     "@types/node": "^22.5.1",
-    "@types/node-cron": "^3.0.11",
     "eslint": "^9.9.1",
     "tsx": "^4.22.3",
     "typescript": "^5.5.4",

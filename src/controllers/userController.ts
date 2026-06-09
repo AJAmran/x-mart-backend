@@ -1,9 +1,23 @@
+import { Types } from "mongoose";
 import { UserService } from "../services/userService";
 import { catchAsync } from "../utils/catchAsync";
 import sendResponse from "../utils/sendResponse";
 import httpStatus from "http-status";
 
 import pick from "../utils/pick";
+import AppError from "../error/AppErros";
+
+const isOwnerOrAdmin = (req: import("express").Request, targetId: string) => {
+  const role = (req.user as { role?: string } | undefined)?.role;
+  const userId = (req.user as { _id?: string } | undefined)?._id;
+  return role === "ADMIN" || userId === targetId;
+};
+
+const validateObjectId = (id: string, label = "id") => {
+  if (!Types.ObjectId.isValid(id)) {
+    throw new AppError(httpStatus.BAD_REQUEST, `Invalid ${label}`);
+  }
+};
 
 const getAllUsers = catchAsync(async (req, res) => {
   const filters = pick(req.query, ["search", "status", "role"]);
@@ -20,10 +34,9 @@ const getAllUsers = catchAsync(async (req, res) => {
 
 const getUserById = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await UserService.getUserById(id);
-  
-  // Check if the requesting user is the same as the requested user or an admin
-  if (req.user.role !== "ADMIN" && req.user._id !== id) {
+  validateObjectId(id, "user id");
+  // High-priority: A01 IDOR — non-admins can only fetch themselves
+  if (!isOwnerOrAdmin(req, id)) {
     return sendResponse(res, {
       statusCode: httpStatus.FORBIDDEN,
       success: false,
@@ -32,6 +45,7 @@ const getUserById = catchAsync(async (req, res) => {
     });
   }
 
+  const result = await UserService.getUserById(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -42,10 +56,8 @@ const getUserById = catchAsync(async (req, res) => {
 
 const updateUser = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const payload = req.body;
-
-  // Check authorization
-  if (req.user.role !== "ADMIN" && req.user._id !== id) {
+  validateObjectId(id, "user id");
+  if (!isOwnerOrAdmin(req, id)) {
     return sendResponse(res, {
       statusCode: httpStatus.FORBIDDEN,
       success: false,
@@ -54,7 +66,7 @@ const updateUser = catchAsync(async (req, res) => {
     });
   }
 
-  const result = await UserService.updateUser(id, payload);
+  const result = await UserService.updateUser(id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -65,6 +77,15 @@ const updateUser = catchAsync(async (req, res) => {
 
 const deleteUser = catchAsync(async (req, res) => {
   const { id } = req.params;
+  validateObjectId(id, "user id");
+  if (!isOwnerOrAdmin(req, id)) {
+    return sendResponse(res, {
+      statusCode: httpStatus.FORBIDDEN,
+      success: false,
+      message: "You are not authorized to perform this action",
+      data: null,
+    });
+  }
   await UserService.deleteUser(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -76,6 +97,15 @@ const deleteUser = catchAsync(async (req, res) => {
 
 const updateUserStatus = catchAsync(async (req, res) => {
   const { id } = req.params;
+  validateObjectId(id, "user id");
+  if (!isOwnerOrAdmin(req, id)) {
+    return sendResponse(res, {
+      statusCode: httpStatus.FORBIDDEN,
+      success: false,
+      message: "You are not authorized to perform this action",
+      data: null,
+    });
+  }
   const { status } = req.body;
   const result = await UserService.updateUserStatus(id, status);
   sendResponse(res, {
@@ -88,6 +118,16 @@ const updateUserStatus = catchAsync(async (req, res) => {
 
 const updateUserRole = catchAsync(async (req, res) => {
   const { id } = req.params;
+  validateObjectId(id, "user id");
+  // Only admins can change roles
+  if ((req.user as { role?: string } | undefined)?.role !== "ADMIN") {
+    return sendResponse(res, {
+      statusCode: httpStatus.FORBIDDEN,
+      success: false,
+      message: "Only admins can change roles",
+      data: null,
+    });
+  }
   const { role } = req.body;
   const result = await UserService.updateUserRole(id, role);
   sendResponse(res, {
