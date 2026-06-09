@@ -21,30 +21,28 @@ const createProduct = (0, catchAsync_1.catchAsync)(async (req, res) => {
 const getAllProducts = (0, catchAsync_1.catchAsync)(async (req, res) => {
     // Extract query parameters
     const { searchTerm, category, minPrice, maxPrice, minStock, maxStock, status, sortBy, sortOrder, page, limit, } = req.query;
-    // Build filters object
+    // Build filters object — field names must match ProductRepository.findAll
     const filters = {};
     if (searchTerm) {
-        filters.name = { $regex: searchTerm, $options: "i" }; // Case-insensitive search
+        filters.searchTerm = searchTerm.trim();
     }
     if (category) {
-        filters.category = category.toUpperCase(); // Convert to uppercase
+        filters.category = category.toUpperCase();
     }
     if (minPrice || maxPrice) {
-        filters.price = {};
         if (minPrice)
-            filters.price.$gte = parseFloat(minPrice);
+            filters.minPrice = parseFloat(minPrice);
         if (maxPrice)
-            filters.price.$lte = parseFloat(maxPrice);
+            filters.maxPrice = parseFloat(maxPrice);
     }
     if (minStock || maxStock) {
-        filters.stock = {};
         if (minStock)
-            filters.stock.$gte = parseInt(minStock);
+            filters.minStock = parseInt(minStock);
         if (maxStock)
-            filters.stock.$lte = parseInt(maxStock);
+            filters.maxStock = parseInt(maxStock);
     }
     if (status) {
-        filters.status = status.toUpperCase(); // Convert to uppercase
+        filters.status = status.toUpperCase();
     }
     // Build options object
     const options = {

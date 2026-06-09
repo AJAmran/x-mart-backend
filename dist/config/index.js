@@ -35,5 +35,9 @@ exports.default = {
     sslStorePassword: process.env.SSL_STORE_PASSWORD,
     backendUrl: process.env.BACKEND_URL ?? "http://localhost:5000",
     clientUrl: process.env.CLIENT_URL ?? "http://localhost:3000",
+    adminEmail: process.env.ADMIN_EMAIL,
+    adminPassword: process.env.ADMIN_PASSWORD,
+    adminProfilePhoto: process.env.ADMIN_PROFILE_PHOTO,
+    adminMobileNumber: process.env.ADMIN_MOBILE_NUMBER,
 };
 //# sourceMappingURL=index.js.map
