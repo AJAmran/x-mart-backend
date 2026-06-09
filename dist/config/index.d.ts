@@ -14,5 +14,9 @@ declare const _default: {
     sslStorePassword: string | undefined;
     backendUrl: string;
     clientUrl: string;
+    adminEmail: string | undefined;
+    adminPassword: string | undefined;
+    adminProfilePhoto: string | undefined;
+    adminMobileNumber: string | undefined;
 };
 export default _default;
