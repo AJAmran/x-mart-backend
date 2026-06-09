@@ -97,8 +97,8 @@ const deleteProduct = (0, catchAsync_1.catchAsync)(async (req, res) => {
 });
 const updateStock = (0, catchAsync_1.catchAsync)(async (req, res) => {
     const { id } = req.params;
-    const { stock } = req.body;
-    const result = await productService_1.ProductService.updateStock(id, stock);
+    const { branchId, stock } = req.body;
+    const result = await productService_1.ProductService.updateStock(id, branchId, stock);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

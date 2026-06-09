@@ -14,7 +14,8 @@ export type TUser = {
     updatedAt?: Date;
 };
 export interface IUserModel extends Model<TUser> {
-    isUserExistsByEmail(id: string): Promise<TUser>;
-    isPasswordMatched(plainTextPassword: string, hashedPassword: string): Promise<boolean>;
+    isUserExistsByEmail(email: string): Promise<TUser | null>;
+    isUserExistsById(id: string): Promise<TUser | null>;
+    isPasswordMatched(plain: string, hashed: string): Promise<boolean>;
     isJWTIssuedBeforePasswordChanged(passwordChangedTimestamp: Date, jwtIssuedTimestamp: number): boolean;
 }

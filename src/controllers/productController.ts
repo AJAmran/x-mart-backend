@@ -33,26 +33,24 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     limit,
   } = req.query;
 
-  // Build filters object
+  // Build filters object — field names must match ProductRepository.findAll
   const filters: any = {};
   if (searchTerm) {
-    filters.name = { $regex: searchTerm, $options: "i" }; // Case-insensitive search
+    filters.searchTerm = (searchTerm as string).trim();
   }
   if (category) {
-    filters.category = (category as string).toUpperCase(); // Convert to uppercase
+    filters.category = (category as string).toUpperCase();
   }
   if (minPrice || maxPrice) {
-    filters.price = {};
-    if (minPrice) filters.price.$gte = parseFloat(minPrice as string);
-    if (maxPrice) filters.price.$lte = parseFloat(maxPrice as string);
+    if (minPrice) filters.minPrice = parseFloat(minPrice as string);
+    if (maxPrice) filters.maxPrice = parseFloat(maxPrice as string);
   }
   if (minStock || maxStock) {
-    filters.stock = {};
-    if (minStock) filters.stock.$gte = parseInt(minStock as string);
-    if (maxStock) filters.stock.$lte = parseInt(maxStock as string);
+    if (minStock) filters.minStock = parseInt(minStock as string);
+    if (maxStock) filters.maxStock = parseInt(maxStock as string);
   }
   if (status) {
-    filters.status = (status as string).toUpperCase(); // Convert to uppercase
+    filters.status = (status as string).toUpperCase();
   }
 
   // Build options object
@@ -112,8 +110,8 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 
 const updateStock = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { stock } = req.body;
-  const result = await ProductService.updateStock(id, stock);
+  const { branchId, stock } = req.body;
+  const result = await ProductService.updateStock(id, branchId, stock);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

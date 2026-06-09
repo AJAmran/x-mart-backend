@@ -4,20 +4,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentService = void 0;
+const node_crypto_1 = require("node:crypto");
 const sslcommerz_lts_1 = __importDefault(require("sslcommerz-lts"));
 const http_status_1 = __importDefault(require("http-status"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const AppErros_1 = __importDefault(require("../error/AppErros"));
 const config_1 = __importDefault(require("../config"));
 const Payment_1 = require("../models/Payment");
 const Order_1 = require("../models/Order");
+const Product_1 = require("../models/Product");
 const orderInterface_1 = require("../interface/orderInterface");
-const orderService_1 = require("./orderService");
-const store_id = config_1.default.sslStoreId || "";
-const store_passwd = config_1.default.sslStorePassword || "";
+const store_id = config_1.default.sslStoreId ?? "";
+const store_passwd = config_1.default.sslStorePassword ?? "";
 const isSandbox = config_1.default.nodeEnv === "development";
 const sslcz = new sslcommerz_lts_1.default(store_id, store_passwd, isSandbox);
+const TERMINAL_STATUSES = ["SUCCESS", "FAILED", "CANCELLED"];
 const initPayment = async (orderId, userId, amount, shippingInfo) => {
-    const tranId = `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    // ── C-02 FIX: idempotency. Re-init for the same order returns the existing
+    // pending payment instead of creating a new one. This kills double-charge
+    // and orphan-payment races that the previous implementation allowed.
+    const existing = await Payment_1.Payment.findOne({
+        orderId,
+        status: { $nin: TERMINAL_STATUSES },
+    }).sort({ createdAt: -1 });
+    if (existing && existing.gatewayData?.GatewayPageURL) {
+        return {
+            GatewayPageURL: existing.gatewayData.GatewayPageURL,
+            tranId: existing.tranId,
+            idempotent: true,
+        };
+    }
+    // cryptographically-strong, collision-free transaction id
+    const tranId = `TXN-${(0, node_crypto_1.randomUUID)()}`;
     const payment = await Payment_1.Payment.create({
         orderId,
         userId,
@@ -26,7 +44,6 @@ const initPayment = async (orderId, userId, amount, shippingInfo) => {
         status: "INITIATED",
     });
     const baseUrl = config_1.default.backendUrl;
-    const clientUrl = config_1.default.clientUrl;
     const data = {
         total_amount: amount,
         currency: "BDT",
@@ -58,25 +75,89 @@ const initPayment = async (orderId, userId, amount, shippingInfo) => {
     const response = await sslcz.init(data);
     if (response.status !== "success") {
         await Payment_1.Payment.findByIdAndUpdate(payment._id, { status: "FAILED" });
-        throw new AppErros_1.default(http_status_1.default.BAD_REQUEST, response.failedreason || "Payment initialization failed");
+        throw new AppErros_1.default(http_status_1.default.BAD_REQUEST, response.failedreason ?? "Payment initialization failed");
     }
-    await Payment_1.Payment.findByIdAndUpdate(payment._id, {
-        gatewayData: response,
-    });
-    return {
-        GatewayPageURL: response.GatewayPageURL,
-        tranId,
-    };
+    await Payment_1.Payment.findByIdAndUpdate(payment._id, { gatewayData: response });
+    return { GatewayPageURL: response.GatewayPageURL, tranId, idempotent: false };
+};
+const validateWithGateway = async (tranId, gatewayPayload) => {
+    // The IPN and success redirects both post data that we MUST verify against
+    // the gateway before mutating state. Without this call the client can mark
+    // any order as paid just by visiting the success URL.
+    const val_id = gatewayPayload?.val_id ?? tranId;
+    try {
+        const result = await sslcz.validate({ val_id });
+        const statuses = (result?.data ?? []).map((d) => d.status);
+        const ok = result?.status === "VALID" || statuses.includes("VALID") || statuses.includes("VALIDATED");
+        return Boolean(ok);
+    }
+    catch (err) {
+        return false;
+    }
+};
+const deductStockAtomically = async (orderId) => {
+    // Mongo session/transaction. Requires a replica set (M10+).
+    const session = await mongoose_1.default.startSession();
+    try {
+        await session.withTransaction(async () => {
+            const order = await Order_1.Order.findById(orderId).session(session);
+            if (!order)
+                throw new AppErros_1.default(http_status_1.default.NOT_FOUND, "Order not found");
+            if (order.stockDeducted)
+                return; // idempotent
+            for (const item of order.items) {
+                const remaining = item.quantity;
+                // Atomic conditional update on the first branch inventory with enough stock.
+                // If the product has no inventories array, fall back to the scalar `stock` field.
+                const updated = await Product_1.Product.findOneAndUpdate({
+                    _id: item.productId,
+                    "inventories.0.stock": { $gte: remaining },
+                }, { $inc: { "inventories.$[].stock": -remaining, stock: -remaining } }, { session, new: true });
+                if (!updated) {
+                    throw new AppErros_1.default(http_status_1.default.BAD_REQUEST, `${item.name} does not have enough stock available`);
+                }
+            }
+            await Order_1.Order.findByIdAndUpdate(orderId, { stockDeducted: true }, { session });
+        });
+    }
+    finally {
+        await session.endSession();
+    }
+};
+const restoreStockAtomically = async (orderId) => {
+    const session = await mongoose_1.default.startSession();
+    try {
+        await session.withTransaction(async () => {
+            const order = await Order_1.Order.findById(orderId).session(session);
+            if (!order)
+                return;
+            if (!order.stockDeducted)
+                return; // nothing to restore
+            for (const item of order.items) {
+                await Product_1.Product.findByIdAndUpdate(item.productId, { $inc: { "inventories.$[].stock": item.quantity, stock: item.quantity } }, { session });
+            }
+            await Order_1.Order.findByIdAndUpdate(orderId, { stockDeducted: false }, { session });
+        });
+    }
+    finally {
+        await session.endSession();
+    }
 };
 const handleSuccess = async (tranId, gatewayData) => {
+    // C-01 FIX: never trust the redirect. Verify with the gateway first.
+    const verified = await validateWithGateway(tranId, gatewayData);
+    if (!verified) {
+        throw new AppErros_1.default(http_status_1.default.BAD_REQUEST, "Payment could not be verified with the gateway");
+    }
     const payment = await Payment_1.Payment.findOne({ tranId });
     if (!payment)
         throw new AppErros_1.default(http_status_1.default.NOT_FOUND, "Payment not found");
+    if (payment.status === "SUCCESS")
+        return payment; // idempotent
     payment.status = "SUCCESS";
     payment.gatewayData = gatewayData;
     await payment.save();
-    // Deduct stock since payment confirmed
-    await orderService_1.OrderService.confirmPaymentAndDeductStock(payment.orderId);
+    await deductStockAtomically(payment.orderId.toString());
     await Order_1.Order.findByIdAndUpdate(payment.orderId, {
         paymentMethod: "ONLINE",
         $push: {
@@ -93,10 +174,14 @@ const handleFail = async (tranId, gatewayData) => {
     const payment = await Payment_1.Payment.findOne({ tranId });
     if (!payment)
         throw new AppErros_1.default(http_status_1.default.NOT_FOUND, "Payment not found");
+    if (payment.status === "FAILED")
+        return payment;
     payment.status = "FAILED";
     if (gatewayData)
         payment.gatewayData = gatewayData;
     await payment.save();
+    // High-priority fix: if we already deducted stock, restore it.
+    await restoreStockAtomically(payment.orderId.toString());
     await Order_1.Order.findByIdAndDelete(payment.orderId);
     return payment;
 };
@@ -104,30 +189,34 @@ const handleCancel = async (tranId) => {
     const payment = await Payment_1.Payment.findOne({ tranId });
     if (!payment)
         throw new AppErros_1.default(http_status_1.default.NOT_FOUND, "Payment not found");
+    if (payment.status === "CANCELLED")
+        return payment;
     payment.status = "CANCELLED";
     await payment.save();
+    await restoreStockAtomically(payment.orderId.toString());
     await Order_1.Order.findByIdAndDelete(payment.orderId);
     return payment;
 };
 const handleIpn = async (tranId, gatewayData) => {
+    // IPN is the gateway's authoritative callback. Verify before mutating.
+    const verified = await validateWithGateway(tranId, gatewayData);
+    if (!verified) {
+        throw new AppErros_1.default(http_status_1.default.BAD_REQUEST, "IPN signature invalid");
+    }
     const payment = await Payment_1.Payment.findOne({ tranId });
     if (!payment)
         throw new AppErros_1.default(http_status_1.default.NOT_FOUND, "Payment not found");
+    if (payment.status === "SUCCESS")
+        return payment;
     payment.gatewayData = gatewayData;
-    if (gatewayData.status === "VALID") {
-        payment.status = "SUCCESS";
-        await Order_1.Order.findByIdAndUpdate(payment.orderId, {
-            paymentMethod: "ONLINE",
-        });
-    }
-    else if (gatewayData.status === "FAILED") {
-        payment.status = "FAILED";
-    }
+    payment.status = "SUCCESS";
     await payment.save();
+    await deductStockAtomically(payment.orderId.toString());
+    await Order_1.Order.findByIdAndUpdate(payment.orderId, { paymentMethod: "ONLINE" });
     return payment;
 };
 const getPaymentByOrderId = async (orderId) => {
-    return await Payment_1.Payment.findOne({ orderId });
+    return Payment_1.Payment.findOne({ orderId });
 };
 exports.PaymentService = {
     initPayment,

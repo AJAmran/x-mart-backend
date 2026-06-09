@@ -1,41 +1,205 @@
+import mongoose, { Types } from "mongoose";
 import { ORDER_STATUS, TOrder } from "../interface/orderInterface";
 export declare const OrderService: {
-    createOrder: (userId: string, payload: Partial<TOrder>) => Promise<import("mongoose").Document<unknown, {}, TOrder, {}, {}> & TOrder & {
-        _id: import("mongoose").Types.ObjectId;
+    createOrder: (userId: string, payload: Partial<TOrder>) => Promise<(mongoose.Document<unknown, {}, TOrder, {}, {}> & TOrder & {
+        _id: Types.ObjectId;
     } & {
         __v: number;
-    }>;
-    confirmPaymentAndDeductStock: (orderId: string) => Promise<void>;
-    getAllOrders: (filters: any, options: any) => Promise<{
+    }) | undefined>;
+    confirmPaymentAndDeductStock: (id: string) => Promise<void>;
+    getAllOrders: (filters: {
+        status?: string;
+        userId?: string;
+    }, options: {
+        page: number;
+        limit: number;
+        sortBy: string;
+        sortOrder: "asc" | "desc";
+    }) => Promise<{
         meta: {
-            page: any;
-            limit: any;
+            page: number;
+            limit: number;
             total: number;
             totalPages: number;
         };
-        data: (import("mongoose").Document<unknown, {}, TOrder, {}, {}> & TOrder & {
-            _id: import("mongoose").Types.ObjectId;
+        data: (mongoose.FlattenMaps<{
+            userId: Types.ObjectId | string;
+            items: {
+                productId: Types.ObjectId | string;
+                quantity: number;
+                price: number;
+                name: string;
+                image: string;
+            }[];
+            shippingInfo: {
+                name: string;
+                email: string;
+                addressLine1: string;
+                addressLine2?: string | undefined;
+                city: string;
+                postalCode: string;
+                division: string;
+                phone: string;
+            };
+            totalPrice: number;
+            status: keyof typeof ORDER_STATUS;
+            paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+            stockDeducted?: boolean | undefined;
+            idempotencyKey?: string | undefined;
+            createdAt?: Date | undefined;
+            updatedAt?: Date | undefined;
+            trackingHistory: {
+                status: keyof typeof ORDER_STATUS;
+                updatedAt: Date;
+                note?: string | undefined;
+            }[];
+        }> & {
+            _id: Types.ObjectId;
         } & {
             __v: number;
         })[];
     }>;
-    getOrderById: (id: string) => Promise<import("mongoose").Document<unknown, {}, TOrder, {}, {}> & TOrder & {
-        _id: import("mongoose").Types.ObjectId;
+    getOrderById: (id: string) => Promise<mongoose.FlattenMaps<{
+        userId: Types.ObjectId | string;
+        items: {
+            productId: Types.ObjectId | string;
+            quantity: number;
+            price: number;
+            name: string;
+            image: string;
+        }[];
+        shippingInfo: {
+            name: string;
+            email: string;
+            addressLine1: string;
+            addressLine2?: string | undefined;
+            city: string;
+            postalCode: string;
+            division: string;
+            phone: string;
+        };
+        totalPrice: number;
+        status: keyof typeof ORDER_STATUS;
+        paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+        stockDeducted?: boolean | undefined;
+        idempotencyKey?: string | undefined;
+        createdAt?: Date | undefined;
+        updatedAt?: Date | undefined;
+        trackingHistory: {
+            status: keyof typeof ORDER_STATUS;
+            updatedAt: Date;
+            note?: string | undefined;
+        }[];
+    }> & {
+        _id: Types.ObjectId;
     } & {
         __v: number;
     }>;
-    getUserOrders: (userId: string) => Promise<(import("mongoose").Document<unknown, {}, TOrder, {}, {}> & TOrder & {
-        _id: import("mongoose").Types.ObjectId;
+    getUserOrders: (userId: string) => Promise<(mongoose.FlattenMaps<{
+        userId: Types.ObjectId | string;
+        items: {
+            productId: Types.ObjectId | string;
+            quantity: number;
+            price: number;
+            name: string;
+            image: string;
+        }[];
+        shippingInfo: {
+            name: string;
+            email: string;
+            addressLine1: string;
+            addressLine2?: string | undefined;
+            city: string;
+            postalCode: string;
+            division: string;
+            phone: string;
+        };
+        totalPrice: number;
+        status: keyof typeof ORDER_STATUS;
+        paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+        stockDeducted?: boolean | undefined;
+        idempotencyKey?: string | undefined;
+        createdAt?: Date | undefined;
+        updatedAt?: Date | undefined;
+        trackingHistory: {
+            status: keyof typeof ORDER_STATUS;
+            updatedAt: Date;
+            note?: string | undefined;
+        }[];
+    }> & {
+        _id: Types.ObjectId;
     } & {
         __v: number;
     })[]>;
-    updateOrderStatus: (id: string, status: keyof typeof ORDER_STATUS, note?: string) => Promise<(import("mongoose").Document<unknown, {}, TOrder, {}, {}> & TOrder & {
-        _id: import("mongoose").Types.ObjectId;
+    updateOrderStatus: (id: string, status: keyof typeof ORDER_STATUS, note?: string) => Promise<(mongoose.FlattenMaps<{
+        userId: Types.ObjectId | string;
+        items: {
+            productId: Types.ObjectId | string;
+            quantity: number;
+            price: number;
+            name: string;
+            image: string;
+        }[];
+        shippingInfo: {
+            name: string;
+            email: string;
+            addressLine1: string;
+            addressLine2?: string | undefined;
+            city: string;
+            postalCode: string;
+            division: string;
+            phone: string;
+        };
+        totalPrice: number;
+        status: keyof typeof ORDER_STATUS;
+        paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+        stockDeducted?: boolean | undefined;
+        idempotencyKey?: string | undefined;
+        createdAt?: Date | undefined;
+        updatedAt?: Date | undefined;
+        trackingHistory: {
+            status: keyof typeof ORDER_STATUS;
+            updatedAt: Date;
+            note?: string | undefined;
+        }[];
+    }> & {
+        _id: Types.ObjectId;
     } & {
         __v: number;
     }) | null>;
-    cancelOrder: (id: string, userId: string) => Promise<(import("mongoose").Document<unknown, {}, TOrder, {}, {}> & TOrder & {
-        _id: import("mongoose").Types.ObjectId;
+    cancelOrder: (id: string, userId: string) => Promise<(mongoose.FlattenMaps<{
+        userId: Types.ObjectId | string;
+        items: {
+            productId: Types.ObjectId | string;
+            quantity: number;
+            price: number;
+            name: string;
+            image: string;
+        }[];
+        shippingInfo: {
+            name: string;
+            email: string;
+            addressLine1: string;
+            addressLine2?: string | undefined;
+            city: string;
+            postalCode: string;
+            division: string;
+            phone: string;
+        };
+        totalPrice: number;
+        status: keyof typeof ORDER_STATUS;
+        paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+        stockDeducted?: boolean | undefined;
+        idempotencyKey?: string | undefined;
+        createdAt?: Date | undefined;
+        updatedAt?: Date | undefined;
+        trackingHistory: {
+            status: keyof typeof ORDER_STATUS;
+            updatedAt: Date;
+            note?: string | undefined;
+        }[];
+    }> & {
+        _id: Types.ObjectId;
     } & {
         __v: number;
     }) | null>;

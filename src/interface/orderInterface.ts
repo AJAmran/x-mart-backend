@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export enum ORDER_STATUS {
   PENDING = "PENDING",
   PROCESSING = "PROCESSING",
@@ -7,7 +9,7 @@ export enum ORDER_STATUS {
 }
 
 export type TOrderItem = {
-  productId: string;
+  productId: Types.ObjectId | string;
   quantity: number;
   price: number;
   name: string;
@@ -26,12 +28,14 @@ export type TShippingInfo = {
 };
 
 export type TOrder = {
-  userId: string;
+  userId: Types.ObjectId | string;
   items: TOrderItem[];
   shippingInfo: TShippingInfo;
   totalPrice: number;
   status: keyof typeof ORDER_STATUS;
   paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+  stockDeducted?: boolean;
+  idempotencyKey?: string;
   createdAt?: Date;
   updatedAt?: Date;
   trackingHistory: {

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-
 import { ErrorRequestHandler } from "express";
 import { logger } from "../utils/logger";
 import { TErrorSources } from "../interface/errorInterface";
@@ -14,15 +11,12 @@ import AppError from "../error/AppErros";
 import config from "../config";
 import { TImageFiles } from "../interface/imageInterface";
 
-const globalErrorHandler: ErrorRequestHandler = async (err, req, res, next) => {
-  //setting default values
+const globalErrorHandler: ErrorRequestHandler = async (err, req, res, _next) => {
+  // Initialize defaults that the rest of the branches override
   let statusCode = 500;
   let message = "Something went wrong!";
   let errorSources: TErrorSources = [
-    {
-      path: "",
-      message: "Something went wrong",
-    },
+    { path: "", message: "Something went wrong" },
   ];
 
   if (req.files && Object.keys(req.files).length > 0) {
@@ -31,50 +25,52 @@ const globalErrorHandler: ErrorRequestHandler = async (err, req, res, next) => {
 
   if (err instanceof ZodError) {
     const simplifiedError = handleZodError(err);
-    statusCode = simplifiedError?.statusCode;
-    message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
   } else if (err?.name === "ValidationError") {
     const simplifiedError = handleValidationError(err);
-    statusCode = simplifiedError?.statusCode;
-    message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
   } else if (err?.name === "CastError") {
     const simplifiedError = handleCastError(err);
-    statusCode = simplifiedError?.statusCode;
-    message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
   } else if (err?.code === 11000) {
     const simplifiedError = handleDuplicateError(err);
-    statusCode = simplifiedError?.statusCode;
-    message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (err?.name === "TokenExpiredError") {
+    statusCode = 401;
+    message = "Access token expired";
+    errorSources = [{ path: "token", message: "expired" }];
+  } else if (err?.name === "JsonWebTokenError") {
+    statusCode = 401;
+    message = "Invalid access token";
+    errorSources = [{ path: "token", message: "invalid" }];
   } else if (err instanceof AppError) {
-    statusCode = err?.statusCode;
+    statusCode = err.statusCode;
     message = err.message;
-    errorSources = [
-      {
-        path: "",
-        message: err?.message,
-      },
-    ];
+    errorSources = [{ path: "", message: err.message }];
   } else if (err instanceof Error) {
     message = err.message;
-    errorSources = [
-      {
-        path: "",
-        message: err?.message,
-      },
-    ];
+    errorSources = [{ path: "", message: err.message }];
   }
 
-  logger.error({ err, statusCode, message }, "Global error handler");
+  // Log with the request id (pino-http child logger) for correlation
+  logger.error(
+    { err, statusCode, message, path: req.path, method: req.method },
+    "Global error handler"
+  );
 
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     success: false,
     message,
     errorSources,
-    err,
+    // Never echo the raw error or stack in production
     stack: config.nodeEnv === "development" ? err?.stack : null,
   });
 };

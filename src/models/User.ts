@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { model, Schema } from "mongoose";
 import { IUserModel, TUser } from "../interface/userInterface";
 import { USER_ROLE, USER_STATUS } from "../constants/userConstant";
@@ -7,10 +7,7 @@ import config from "../config";
 
 const userSchema = new Schema<TUser, IUserModel>(
   {
-    name: {
-      type: String,
-      required: true,
-    },
+    name: { type: String, required: true, trim: true },
     role: {
       type: String,
       enum: Object.keys(USER_ROLE),
@@ -19,81 +16,69 @@ const userSchema = new Schema<TUser, IUserModel>(
     email: {
       type: String,
       required: true,
-      //validate email
+      lowercase: true,
+      trim: true,
       match: [
         /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
         "Please fill a valid email address",
       ],
     },
-    password: {
-      type: String,
-      required: true,
-      select: 0,
-    },
+    password: { type: String, required: true, select: 0 },
     status: {
       type: String,
       enum: Object.keys(USER_STATUS),
       default: USER_STATUS.ACTIVE,
     },
-    passwordChangedAt: {
-      type: Date,
-    },
-    mobileNumber: {
-      type: String,
-      required: true,
-    },
-    profilePhoto: {
-      type: String,
-      default: null,
-    },
+    passwordChangedAt: { type: Date },
+    mobileNumber: { type: String, required: true, unique: true, trim: true },
+    profilePhoto: { type: String, default: null },
   },
-  {
-    timestamps: true,
-    virtuals: true,
-  }
+  { timestamps: true, virtuals: true }
 );
 
-// Indexes
+// Production indexes
 userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ role: 1 });
-userSchema.index({ status: 1 });
+userSchema.index({ mobileNumber: 1 }, { unique: true });
+userSchema.index({ role: 1, status: 1 });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this; // doc
-  // hashing password and save into DB
-
-  user.password = await bcryptjs.hash(
+  const user = this;
+  if (!user.isModified("password")) return next();
+  user.password = await bcrypt.hash(
     user.password,
     Number(config.bcrypt_salt_rounds)
   );
-
   next();
 });
 
-// set '' after saving password
 userSchema.post("save", function (doc, next) {
   doc.password = "";
   next();
 });
 
 userSchema.statics.isUserExistsByEmail = async function (email: string) {
-  return await User.findOne({ email }).select("+password");
+  return User.findOne({ email: email.toLowerCase() }).select("+password");
+};
+
+userSchema.statics.isUserExistsById = async function (id: string) {
+  return User.findById(id).select("+password");
 };
 
 userSchema.statics.isPasswordMatched = async function (
-  plainTextPassword,
-  hashedPassword
+  plainTextPassword: string,
+  hashedPassword: string
 ) {
-  return await bcryptjs.compare(plainTextPassword, hashedPassword);
+  return bcrypt.compare(plainTextPassword, hashedPassword);
 };
 
 userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
-  passwordChangedTimestamp: number,
+  passwordChangedTimestamp: Date,
   jwtIssuedTimestamp: number
 ) {
-  const passwordChangedTime =
-    new Date(passwordChangedTimestamp).getTime() / 1000;
+  // Fix the off-by-one: tokens issued in the same second as the password change
+  // must be considered still valid.
+  const passwordChangedTime = passwordChangedTimestamp.getTime() / 1000;
   return passwordChangedTime > jwtIssuedTimestamp;
 };
 

@@ -12,5 +12,11 @@
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       "dest": "dist/server.js"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/v1/cron/cleanup-discounts",
+      "schedule": "0 0 * * *"
+    }
   ]
 }

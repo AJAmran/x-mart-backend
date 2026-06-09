@@ -1,7 +1,9 @@
+import { Types } from "mongoose";
+
 export type TPayment = {
   _id?: string;
-  orderId: string;
-  userId: string;
+  orderId: Types.ObjectId | string;
+  userId: Types.ObjectId | string;
   tranId: string;
   amount: number;
   status: "INITIATED" | "SUCCESS" | "FAILED" | "CANCELLED";

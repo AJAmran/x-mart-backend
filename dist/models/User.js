@@ -10,10 +10,7 @@ const mongoose_1 = require("mongoose");
 const userConstant_1 = require("../constants/userConstant");
 const config_1 = __importDefault(require("../config"));
 const userSchema = new mongoose_1.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
+    name: { type: String, required: true, trim: true },
     role: {
         type: String,
         enum: Object.keys(userConstant_1.USER_ROLE),
@@ -22,61 +19,52 @@ const userSchema = new mongoose_1.Schema({
     email: {
         type: String,
         required: true,
-        //validate email
+        lowercase: true,
+        trim: true,
         match: [
             /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
             "Please fill a valid email address",
         ],
     },
-    password: {
-        type: String,
-        required: true,
-        select: 0,
-    },
+    password: { type: String, required: true, select: 0 },
     status: {
         type: String,
         enum: Object.keys(userConstant_1.USER_STATUS),
         default: userConstant_1.USER_STATUS.ACTIVE,
     },
-    passwordChangedAt: {
-        type: Date,
-    },
-    mobileNumber: {
-        type: String,
-        required: true,
-    },
-    profilePhoto: {
-        type: String,
-        default: null,
-    },
-}, {
-    timestamps: true,
-    virtuals: true,
-});
-// Indexes
+    passwordChangedAt: { type: Date },
+    mobileNumber: { type: String, required: true, unique: true, trim: true },
+    profilePhoto: { type: String, default: null },
+}, { timestamps: true, virtuals: true });
+// Production indexes
 userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ role: 1 });
-userSchema.index({ status: 1 });
-userSchema.pre('save', async function (next) {
+userSchema.index({ mobileNumber: 1 }, { unique: true });
+userSchema.index({ role: 1, status: 1 });
+userSchema.pre("save", async function (next) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const user = this; // doc
-    // hashing password and save into DB
+    const user = this;
+    if (!user.isModified("password"))
+        return next();
     user.password = await bcryptjs_1.default.hash(user.password, Number(config_1.default.bcrypt_salt_rounds));
     next();
 });
-// set '' after saving password
 userSchema.post("save", function (doc, next) {
     doc.password = "";
     next();
 });
 userSchema.statics.isUserExistsByEmail = async function (email) {
-    return await exports.User.findOne({ email }).select("+password");
+    return exports.User.findOne({ email: email.toLowerCase() }).select("+password");
+};
+userSchema.statics.isUserExistsById = async function (id) {
+    return exports.User.findById(id).select("+password");
 };
 userSchema.statics.isPasswordMatched = async function (plainTextPassword, hashedPassword) {
-    return await bcryptjs_1.default.compare(plainTextPassword, hashedPassword);
+    return bcryptjs_1.default.compare(plainTextPassword, hashedPassword);
 };
 userSchema.statics.isJWTIssuedBeforePasswordChanged = function (passwordChangedTimestamp, jwtIssuedTimestamp) {
-    const passwordChangedTime = new Date(passwordChangedTimestamp).getTime() / 1000;
+    // Fix the off-by-one: tokens issued in the same second as the password change
+    // must be considered still valid.
+    const passwordChangedTime = passwordChangedTimestamp.getTime() / 1000;
     return passwordChangedTime > jwtIssuedTimestamp;
 };
 exports.User = (0, mongoose_1.model)("User", userSchema);

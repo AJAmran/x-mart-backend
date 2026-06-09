@@ -2,12 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.productRepository = exports.ProductRepository = void 0;
 const Product_1 = require("../models/Product");
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 class ProductRepository {
     async findAll(filters, options) {
         const { page, limit, sortBy, sortOrder } = options;
         const query = {};
-        if (filters.searchTerm) {
-            query.name = { $regex: filters.searchTerm, $options: "i" };
+        // High-priority: text search replaces unindexed $regex. Escape the term
+        // for the safe path; rely on the "text" index for relevance scoring.
+        if (filters.searchTerm && filters.searchTerm.trim()) {
+            const term = filters.searchTerm.trim();
+            // Combine full-text search with a safe prefix match on the name for
+            // sub-word matches (text index only matches whole tokens).
+            query.$or = [
+                { $text: { $search: term } },
+                { name: { $regex: `^${escapeRegex(term)}`, $options: "i" } },
+            ];
         }
         if (filters.category) {
             query.category = filters.category.toUpperCase();
@@ -22,12 +31,26 @@ class ProductRepository {
             if (filters.maxPrice)
                 query.price.$lte = filters.maxPrice;
         }
+        if (filters.hasDiscount) {
+            query["discount.endDate"] = { $exists: true, $gte: new Date() };
+            query["discount.value"] = { $gt: 0 };
+        }
+        if (filters.tags?.length) {
+            query.tags = { $in: filters.tags };
+        }
+        if (filters.branchId) {
+            query["inventories.branchId"] = filters.branchId;
+        }
         if (filters.minStock || filters.maxStock) {
-            query.stock = {};
+            const stockMatch = {};
             if (filters.minStock)
-                query.stock.$gte = filters.minStock;
+                stockMatch.$gte = filters.minStock;
             if (filters.maxStock)
-                query.stock.$lte = filters.maxStock;
+                stockMatch.$lte = filters.maxStock;
+            query.$and = [
+                ...(Array.isArray(query.$and) ? query.$and : []),
+                { $or: [{ "inventories.stock": stockMatch }, { stock: stockMatch }] },
+            ];
         }
         const [data, total] = await Promise.all([
             Product_1.Product.find(query)
@@ -45,6 +68,15 @@ class ProductRepository {
     async findById(id) {
         return Product_1.Product.findById(id).lean();
     }
+    async findFeatured(limit = 8) {
+        return Product_1.Product.find({
+            "discount.endDate": { $exists: true, $gte: new Date() },
+            "discount.value": { $gt: 0 },
+        })
+            .sort({ "discount.value": -1, createdAt: -1 })
+            .limit(limit)
+            .lean();
+    }
     async create(data) {
         const doc = await Product_1.Product.create(data);
         return doc.toObject();
@@ -55,8 +87,8 @@ class ProductRepository {
     async delete(id) {
         return Product_1.Product.findByIdAndDelete(id).lean();
     }
-    async updateStock(id, stock) {
-        return Product_1.Product.findByIdAndUpdate(id, { stock }, { new: true }).lean();
+    async updateStock(id, branchId, stock) {
+        return Product_1.Product.findOneAndUpdate({ _id: id, "inventories.branchId": branchId }, { $set: { "inventories.$.stock": stock } }, { new: true }).lean();
     }
     async applyDiscount(id, discount) {
         return Product_1.Product.findByIdAndUpdate(id, { discount }, { new: true }).lean();

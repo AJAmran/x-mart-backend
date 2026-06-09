@@ -3,10 +3,10 @@ import { TPayment } from "../interface/paymentInterface";
 
 const paymentSchema = new Schema<TPayment>(
   {
-    orderId: { type: String, required: true },
-    userId: { type: String, required: true },
+    orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     tranId: { type: String, required: true, unique: true },
-    amount: { type: Number, required: true },
+    amount: { type: Number, required: true, min: 0 },
     status: {
       type: String,
       enum: ["INITIATED", "SUCCESS", "FAILED", "CANCELLED"],
@@ -18,6 +18,7 @@ const paymentSchema = new Schema<TPayment>(
   { timestamps: true }
 );
 
-paymentSchema.index({ orderId: 1 });
+paymentSchema.index({ orderId: 1, status: 1 });
+paymentSchema.index({ status: 1, updatedAt: -1 });
 
 export const Payment = model<TPayment>("Payment", paymentSchema);

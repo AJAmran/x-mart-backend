@@ -26,9 +26,11 @@ const shippingInfoSchema = z.object({
 
 const createOrderValidationSchema = z.object({
   body: z.object({
-    items: z.array(orderItemSchema, {
-      required_error: "At least one item is required",
-    }),
+    items: z
+      .array(orderItemSchema, {
+        required_error: "At least one item is required",
+      })
+      .min(1, { message: "Your cart is empty. Add at least one item before placing an order" }),
     shippingInfo: shippingInfoSchema,
     paymentMethod: z.enum(["CASH_ON_DELIVERY", "ONLINE"], {
       required_error: "Payment method is required",
