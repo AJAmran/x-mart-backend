@@ -132,14 +132,17 @@ const getNearbyBranches = async (lat: number, lng: number, maxDistance: number, 
 
 const getBranchProducts = async (branchId: string, filters: any, options: any) => {
   const { limit, page, skip, sortBy, sortOrder } = paginationHelpers.calculatePagination(options);
-  
+
+  // Requires `availableBranches` to be stored as ObjectId — run
+  // `npm run migrate:branch-refs` after re-seeding, otherwise Mongoose casts the
+  // id and only ALL_BRANCHES products match.
   const andConditions: any[] = [
     {
       $or: [
         { availability: 'ALL_BRANCHES' },
-        { availableBranches: branchId }
-      ]
-    }
+        { availableBranches: branchId },
+      ],
+    },
   ];
   
   // Add other filters

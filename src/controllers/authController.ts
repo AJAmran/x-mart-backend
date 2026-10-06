@@ -6,9 +6,6 @@ import httpStatus from "http-status";
 
 const isProduction = config.nodeEnv === "production";
 
-// C-10 FIX: both tokens are now httpOnly + Secure + SameSite=None. The browser
-// keeps them off-limits to JS (XSS can't steal them) and they are sent on
-// cross-site redirects between the Vercel subdomains.
 const setAuthCookies = (
   res: import("express").Response,
   tokens: { accessToken: string; refreshToken: string }
@@ -21,11 +18,11 @@ const setAuthCookies = (
   };
   res.cookie("accessToken", tokens.accessToken, {
     ...common,
-    maxAge: 15 * 60 * 1000, // 15 min — matches access token expiry
+    maxAge: 15 * 60 * 1000, 
   });
   res.cookie("refreshToken", tokens.refreshToken, {
     ...common,
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 };
 

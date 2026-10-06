@@ -122,13 +122,16 @@ export class ProductRepository {
     return Product.findByIdAndDelete(id).lean();
   }
 
-  async updateStock(id: string, branchId: string, stock: number): Promise<TProduct | null> {
-    return Product.findOneAndUpdate(
-      { _id: id, "inventories.branchId": branchId },
-      { $set: { "inventories.$.stock": stock } },
-      { new: true }
-    ).lean();
-  }
+async updateStock(id: string, branchId: string, stock: number): Promise<TProduct | null> {
+      // Requires `inventories.branchId` to be stored as ObjectId — run
+      // `npm run migrate:branch-refs` after re-seeding, otherwise Mongoose casts
+      // the id and the update matches nothing (404).
+      return Product.findOneAndUpdate(
+        { _id: id, "inventories.branchId": branchId },
+        { $set: { "inventories.$.stock": stock } },
+        { new: true }
+      ).lean();
+    }
 
   async applyDiscount(id: string, discount: unknown): Promise<TProduct | null> {
     return Product.findByIdAndUpdate(id, { discount }, { new: true }).lean();
