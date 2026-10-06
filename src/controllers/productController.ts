@@ -122,7 +122,7 @@ const updateStock = catchAsync(async (req: Request, res: Response) => {
 
 const applyDiscount = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { discount } = req.body;
+  const discount = req.body;
   const result = await ProductService.applyDiscount(id, discount);
   sendResponse(res, {
     statusCode: httpStatus.OK,
