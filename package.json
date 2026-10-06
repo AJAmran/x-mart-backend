@@ -17,6 +17,7 @@
     "seed:admin": "tsx src/seed/seed.ts --admin",
     "seed:users": "tsx src/seed/seed.ts --users",
         "migrate:branch-refs": "tsx src/scripts/normalizeBranchRefs.ts",
+    "seed:orders": "tsx src/seed/seedOrders.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
