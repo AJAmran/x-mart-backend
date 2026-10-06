@@ -3,7 +3,9 @@ import mongoose, { Types } from "mongoose";
 import AppError from "../error/AppErros";
 import { ORDER_STATUS, TOrder, TOrderItem } from "../interface/orderInterface";
 import { Product } from "../models/Product";
+import { Branch } from "../models/Branch";
 import { Order } from "../models/Order";
+import { resolveProductStock } from "../utils/stock";
 
 // ── Helper: atomic stock deduction (single transaction) ───────────────────
 const deductStockForOrder = async (orderId: Types.ObjectId | string) => {
@@ -127,13 +129,13 @@ const createOrder = async (userId: string, payload: Partial<TOrder>) => {
         `${item.name ?? "One item in your cart"} is no longer available`
       );
     }
-    const totalStock =
-      (product.stock ?? 0) ||
-      (product.inventories?.reduce((s: number, inv: { stock: number }) => s + inv.stock, 0) ?? 0);
+    const totalStock = resolveProductStock(product);
     if (totalStock < item.quantity) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        `Only ${totalStock} unit${totalStock === 1 ? "" : "s"} of ${product.name} available`
+        totalStock === 0
+          ? `${product.name} is out of stock`
+          : `Only ${totalStock} unit${totalStock === 1 ? "" : "s"} of ${product.name} available`
       );
     }
   }
@@ -144,6 +146,22 @@ const createOrder = async (userId: string, payload: Partial<TOrder>) => {
   );
 
   const isOnlinePayment = payload.paymentMethod === "ONLINE";
+
+  // Reject a branch that does not exist, rather than storing a dangling ref.
+  let branchObjectId: Types.ObjectId | undefined;
+
+  if (payload.branchId) {
+    const exists = await Branch.exists({ _id: payload.branchId });
+
+    if (!exists) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "The selected fulfillment branch no longer exists"
+      );
+    }
+
+    branchObjectId = new Types.ObjectId(String(payload.branchId));
+  }
 
   // COD: deduct stock now. Online: deduct later on payment success (in PaymentService).
   let orderDoc;
@@ -157,6 +175,7 @@ const createOrder = async (userId: string, payload: Partial<TOrder>) => {
             items: payload.items,
             shippingInfo: payload.shippingInfo,
             totalPrice,
+            branchId: branchObjectId,
             paymentMethod: payload.paymentMethod,
             status: ORDER_STATUS.PENDING,
             idempotencyKey: payload.idempotencyKey,
@@ -176,23 +195,46 @@ const createOrder = async (userId: string, payload: Partial<TOrder>) => {
 
       if (!isOnlinePayment) {
         for (const item of payload.items as TOrderItem[]) {
-          const updated = await Product.findOneAndUpdate(
-            {
-              _id: new Types.ObjectId(String(item.productId)),
-              $or: [
-                { "inventories.0.stock": { $gte: item.quantity } },
-                { stock: { $gte: item.quantity } },
-              ],
-            },
-            { $inc: { "inventories.$[].stock": -item.quantity, stock: -item.quantity } },
-            { session, new: true }
-          );
-          if (!updated) {
+          /**
+           * Only the per-branch `inventories` rows are decremented.
+           *
+           * The previous update also did `$inc: { stock: -qty }` on the
+           * denormalised aggregate. Because that field is frequently 0 or
+           * absent, the increment *created* it as a negative number, and
+           * Mongoose does not validate `findOneAndUpdate` unless
+           * `runValidators` is set — so the `min: 0` on the schema never fired.
+           * Every later read then returned that negative value and the product
+           * could never be ordered again.
+           *
+           * `resolveProductStock` now derives the authoritative figure from
+           * these branch rows, so leaving `stock` untouched is safe.
+           */
+          const product = await Product.findById(
+            new Types.ObjectId(String(item.productId))
+          ).session(session);
+
+          if (!product) {
             throw new AppError(
-              httpStatus.BAD_REQUEST,
-              `${item.name} ran out of stock while placing your order`
+              httpStatus.NOT_FOUND,
+              `${item.name ?? "An item in your cart"} is no longer available`
             );
           }
+
+          const available = resolveProductStock(product);
+          if (available < item.quantity) {
+            throw new AppError(
+              httpStatus.BAD_REQUEST,
+              available === 0
+                ? `${item.name ?? product.name} is out of stock`
+                : `Only ${available} unit${available === 1 ? "" : "s"} of ${product.name} available`
+            );
+          }
+
+          await Product.updateOne(
+            { _id: product._id },
+            { $inc: { "inventories.$[].stock": -item.quantity } },
+            { session }
+          );
         }
       }
     });

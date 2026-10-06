@@ -27,6 +27,18 @@ const orderSchema = new Schema<TOrder>(
       phone: { type: String, required: true },
     },
     totalPrice: { type: Number, required: true, min: 0 },
+    /**
+     * Branch the customer asked to fulfil from, chosen at checkout.
+     *
+     * This was never stored: the field was absent from the model *and* from the
+     * create-order zod schema, and `validateRequest` replaces `req.body` with the
+     * parsed (unknown-key-stripped) result — so the branch picker on the
+     * storefront silently did nothing.
+     *
+     * Optional by design: an order may be fulfilled centrally, and the seed data
+     * predates this field.
+     */
+    branchId: { type: Schema.Types.ObjectId, ref: "Branch", required: false },
     status: {
       type: String,
       enum: Object.keys(ORDER_STATUS) as (keyof typeof ORDER_STATUS)[],
@@ -60,5 +72,6 @@ orderSchema.index({ userId: 1, status: 1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ "items.productId": 1 });
 orderSchema.index({ createdAt: -1 });
+orderSchema.index({ branchId: 1, createdAt: -1 });
 
 export const Order = model<TOrder>("Order", orderSchema);
