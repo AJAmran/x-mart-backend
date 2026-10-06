@@ -14,13 +14,23 @@ export default tseslint.config(
   },
   {
     rules: {
-      "no-unused-vars": "error",
+      "no-unused-vars": "off",
+      // Use the TypeScript-aware rule instead of the base one. Running both
+      // means the base rule reports identifiers that only appear in a type
+      // position — e.g. `(c: Check) => boolean` inside Array<[...]> — as unused
+      // variables, which is a false positive, not a finding.
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
       "no-undef": "error",
       "prefer-const": "error",
       "no-console": "warn",
     },
   },
   {
-    ignores: ["**/node_modules/", "**/dist/"],
+    // docker/mongo-init.js is a Mongo shell script, not Node: `db` and `print`
+    // are provided by mongosh at runtime.
+    ignores: ["**/node_modules/", "**/dist/", "docker/"],
   }
 );

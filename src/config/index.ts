@@ -32,11 +32,16 @@ export default {
   cloudinary_api_secret: requireEnvInProd("CLOUDINARY_API_SECRET"),
   sslStoreId: process.env.Store_ID,
   sslStorePassword: process.env.Store_Password,
+  // Defaults to the sandbox so a fresh install has a working checkout instead
+  // of `undefined`, which produced a confusing gateway error only once a real
+  // customer tried to pay. Switch to https://securepay.sslcommerz.com for live.
+  SSL_COMMERCE_URL:
+    process.env.SSL_COMMERCE_URL ?? "https://sandbox.sslcommerz.com",
   backendUrl: process.env.BACKEND_URL ?? "http://localhost:5000",
   clientUrl: process.env.CLIENT_URL ?? "http://localhost:3000",
+  cronSecret: process.env.CRON_SECRET,
   adminEmail: process.env.ADMIN_EMAIL,
   adminPassword: process.env.ADMIN_PASSWORD,
   adminProfilePhoto: process.env.ADMIN_PROFILE_PHOTO,
   adminMobileNumber: process.env.ADMIN_MOBILE_NUMBER,
-  SSL_COMMERCE_URL: process.env.SSL_COMMERCE_URL,
 };

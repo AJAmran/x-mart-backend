@@ -56,12 +56,12 @@ app.use(
 app.use(httpLogger);
 
 // ── CORS: explicit allowlist, never fall through to *
+//
+// `CLIENT_URL` is the customer's own storefront origin and is the only value
+// that should need editing. The demo deployment's own Vercel domain used to be
+// pinned here; leaving it in means every install keeps trusting that host.
 const allowedOrigins = new Set<string>(
-  [
-    "http://localhost:3000",
-    config.clientUrl,
-    "https://x-mart-client.vercel.app",
-  ]
+  ["http://localhost:3000", config.clientUrl]
     .filter(Boolean)
     .map((o) => o.replace(/\/+$/, ""))
 );

@@ -1,7 +1,7 @@
 {
   "name": "xmart-supershop-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "X-Mart SuperShop API — production-ready e-commerce backend",
   "main": "dist/server.js",
   "engines": {
     "node": ">=20.11.0"
@@ -11,15 +11,18 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "vercel-build": "npm run build",
+    "doctor": "tsx src/scripts/doctor.ts",
+    "setup": "npm run doctor && npm run seed:admin",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint src --fix",
     "seed": "tsx src/seed/seed.ts",
     "seed:admin": "tsx src/seed/seed.ts --admin",
     "seed:users": "tsx src/seed/seed.ts --users",
-        "migrate:branch-refs": "tsx src/scripts/normalizeBranchRefs.ts",
+    "seed:demo": "tsx src/seed/seed.ts && tsx src/seed/seedCatalog.ts && tsx src/seed/seedOrders.ts",
+    "migrate:branch-refs": "tsx src/scripts/normalizeBranchRefs.ts",
     "seed:orders": "tsx src/seed/seedOrders.ts",
     "smoke": "tsx src/scripts/smokeTest.ts",
-        "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
