@@ -1,0 +1,1370 @@
+{
+  "branches": [
+    {
+      "name": "Gulshan Branch",
+      "code": "GLS001",
+      "status": "ACTIVE",
+      "type": "STANDARD",
+      "contact": {
+        "phone": "+8801234567890",
+        "email": "gulshan@branch.com",
+        "manager": "Ahmed Rahman",
+        "emergencyContact": "+8809876543210"
+      },
+      "location": {
+        "address": "Gulshan Avenue, Road 113",
+        "city": "Dhaka",
+        "state": "Dhaka",
+        "country": "Bangladesh",
+        "postalCode": "1212",
+        "coordinates": {
+          "type": "Point",
+          "coordinates": [
+            90.414391,
+            23.797911
+          ]
+        }
+      },
+      "operatingHours": [
+        {
+          "dayType": "WEEKDAYS",
+          "openingTime": "09:00",
+          "closingTime": "22:00",
+          "is24Hours": false,
+          "isClosed": false
+        }
+      ],
+      "facilities": {
+        "parking": true,
+        "wifi": true,
+        "delivery": true,
+        "pickup": true,
+        "dining": true,
+        "atm": false,
+        "pharmacy": false,
+        "bakery": false
+      },
+      "openingDate": "2025-07-01T00:00:00.000Z",
+      "images": []
+    },
+    {
+      "name": "Dhanmondi Branch",
+      "code": "DHN001",
+      "status": "ACTIVE",
+      "type": "STANDARD",
+      "contact": {
+        "phone": "+8801234567891",
+        "email": "dhanmondi@branch.com",
+        "manager": "Fatima Begum",
+        "emergencyContact": "+8809876543211"
+      },
+      "location": {
+        "address": "Road 27, Dhanmondi",
+        "city": "Dhaka",
+        "state": "Dhaka",
+        "country": "Bangladesh",
+        "postalCode": "1209",
+        "coordinates": {
+          "type": "Point",
+          "coordinates": [
+            90.376015,
+            23.746466
+          ]
+        }
+      },
+      "operatingHours": [
+        {
+          "dayType": "WEEKDAYS",
+          "openingTime": "08:00",
+          "closingTime": "19:00",
+          "is24Hours": false,
+          "isClosed": false
+        },
+        {
+          "dayType": "WEEKENDS",
+          "is24Hours": false,
+          "isClosed": true
+        }
+      ],
+      "facilities": {
+        "parking": false,
+        "wifi": true,
+        "delivery": true,
+        "pickup": false,
+        "dining": false,
+        "atm": false,
+        "pharmacy": false,
+        "bakery": false
+      },
+      "openingDate": "2025-07-01T00:00:00.000Z",
+      "images": []
+    }
+  ],
+  "products": [
+    {
+      "name": "Fresh Rohu Fish",
+      "description": "Locally sourced fresh rohu fish from Bangladeshi rivers",
+      "price": 350,
+      "costPrice": 280,
+      "category": "FISH",
+      "subCategory": "FRESHWATER",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/rohu-fish.png?updatedAt=1751961000936"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "FISH",
+        "FRESH",
+        "LOCAL"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 30,
+        "width": 10,
+        "height": 5
+      },
+      "manufacturer": "Local Fisheries",
+      "supplier": "Dhaka Fish Market",
+      "barcode": "123456789101",
+      "sku": "ROHU-001",
+      "inventories": [
+        {
+          "stock": 50,
+          "lowStockThreshold": 10,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 40,
+          "lowStockThreshold": 8,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 5,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-15T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Hilsa Fish",
+      "description": "Premium Padma river hilsa, Bangladesh's national fish",
+      "price": 1200,
+      "costPrice": 1000,
+      "category": "FISH",
+      "subCategory": "FRESHWATER",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/hilsa-fis-removebg-preview.png?updatedAt=1751961794388"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "SEASONAL",
+      "tags": [
+        "FISH",
+        "HILSA",
+        "PREMIUM"
+      ],
+      "weight": 1.5,
+      "dimensions": {
+        "length": 35,
+        "width": 12,
+        "height": 6
+      },
+      "manufacturer": "Padma Fisheries",
+      "supplier": "Barisal Fish Market",
+      "barcode": "123456789102",
+      "sku": "HILSA-001",
+      "inventories": [
+        {
+          "stock": 19,
+          "lowStockThreshold": 5,
+          "branchCode": "GLS001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001"
+      ]
+    },
+    {
+      "name": "Prawn",
+      "description": "Freshwater prawns, ideal for grilling",
+      "price": 700,
+      "costPrice": 600,
+      "category": "FISH",
+      "subCategory": "SEAFOOD",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/fresh-shrimp-500x500-removebg-preview.png?updatedAt=1751963375033"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "PROMOTIONAL",
+      "tags": [
+        "FISH",
+        "PRAWN",
+        "SEAFOOD"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 15,
+        "width": 5,
+        "height": 3
+      },
+      "manufacturer": "Coastal Fisheries",
+      "supplier": "Chittagong Seafood Co.",
+      "barcode": "123456789104",
+      "sku": "PRAWN-001",
+      "inventories": [
+        {
+          "stock": 24,
+          "lowStockThreshold": 5,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 19,
+          "lowStockThreshold": 5,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "fixed",
+        "value": 50,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-10T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Fresh Salmon",
+      "description": "Premium quality fresh salmon fillet",
+      "price": 15.99,
+      "costPrice": 10.5,
+      "category": "FISH",
+      "subCategory": "seafood",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/Fresh%20Salmon.png?updatedAt=1751956787926"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "seafood",
+        "fresh",
+        "premium"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 20,
+        "width": 10,
+        "height": 5
+      },
+      "manufacturer": "Ocean Foods",
+      "supplier": "Sea Harvest",
+      "barcode": "123456789012",
+      "sku": "SALMON-001",
+      "inventories": [
+        {
+          "stock": 29,
+          "lowStockThreshold": 10,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 10,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-15T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Beef Sirloin",
+      "description": "Premium beef sirloin cut, ideal for grilling",
+      "price": 800,
+      "costPrice": 650,
+      "category": "MEAT",
+      "subCategory": "BEEF",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/beef-boneless-25-gm-500-gm.png?updatedAt=1751977755816"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "MEAT",
+        "BEEF",
+        "PREMIUM"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 20,
+        "width": 15,
+        "height": 5
+      },
+      "manufacturer": "Bengal Meat",
+      "supplier": "Chittagong Meat Co.",
+      "barcode": "123456789201",
+      "sku": "BEEF-SIRLOIN-001",
+      "inventories": [
+        {
+          "stock": 30,
+          "lowStockThreshold": 5,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 25,
+          "lowStockThreshold": 5,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 10,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-15T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Chicken Breast",
+      "description": "Boneless chicken breast, perfect for curries",
+      "price": 400,
+      "costPrice": 320,
+      "category": "MEAT",
+      "subCategory": "POULTRY",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/65fa98db115075f231ecdb21_Broiler-Chicken-Breast-Boneless_1-removebg-preview.png?updatedAt=1751978241542"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "MEAT",
+        "CHICKEN",
+        "FRESH"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 15,
+        "width": 10,
+        "height": 3
+      },
+      "manufacturer": "Kazi Farms",
+      "supplier": "Dhaka Poultry Market",
+      "barcode": "123456789202",
+      "sku": "CHICKEN-BREAST-001",
+      "inventories": [
+        {
+          "stock": 60,
+          "lowStockThreshold": 10,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Duck Meat",
+      "description": "Fresh duck meat for special recipes",
+      "price": 500,
+      "costPrice": 400,
+      "category": "MEAT",
+      "subCategory": "POULTRY",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/1725032473-deshi-duck-whole-sodaipati-removebg-preview.png?updatedAt=1751978470002"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "SEASONAL",
+      "tags": [
+        "MEAT",
+        "DUCK",
+        "FRESH"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 20,
+        "width": 12,
+        "height": 6
+      },
+      "manufacturer": "Sylhet Poultry",
+      "supplier": "Local Poultry Farms",
+      "barcode": "123456789204",
+      "sku": "DUCK-MEAT-001",
+      "inventories": [
+        {
+          "stock": 15,
+          "lowStockThreshold": 5,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 10,
+          "lowStockThreshold": 3,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Chicken Drumsticks",
+      "description": "Juicy chicken drumsticks for grilling or frying",
+      "price": 420,
+      "costPrice": 340,
+      "category": "MEAT",
+      "subCategory": "POULTRY",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/broiler-chicken-drumsticks-50-gm-9-12-pcs-1-kg-removebg-preview.png?updatedAt=1751978607430"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "MEAT",
+        "CHICKEN",
+        "FRESH"
+      ],
+      "weight": 0.6,
+      "dimensions": {
+        "length": 18,
+        "width": 12,
+        "height": 4
+      },
+      "manufacturer": "Kazi Farms",
+      "supplier": "Dhaka Poultry Market",
+      "barcode": "123456789206",
+      "sku": "CHICKEN-DRUM-001",
+      "inventories": [
+        {
+          "stock": 50,
+          "lowStockThreshold": 10,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Mango (Fazli)",
+      "description": "Sweet and juicy Fazli mangoes, locally grown",
+      "price": 150,
+      "costPrice": 120,
+      "category": "FRUITS",
+      "subCategory": "TROPICAL",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/fazli-mango-removebg-preview.png?updatedAt=1751978769329"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "SEASONAL",
+      "tags": [
+        "FRUITS",
+        "MANGO",
+        "SEASONAL"
+      ],
+      "weight": 0.3,
+      "dimensions": {
+        "length": 10,
+        "width": 8,
+        "height": 6
+      },
+      "manufacturer": "Local Orchards",
+      "supplier": "Rajshahi Fruit Market",
+      "barcode": "123456789301",
+      "sku": "MANGO-FAZLI-001",
+      "inventories": [
+        {
+          "stock": 100,
+          "lowStockThreshold": 20,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 80,
+          "lowStockThreshold": 15,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 10,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-15T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Banana",
+      "description": "Ripe yellow bananas, perfect for snacks",
+      "price": 60,
+      "costPrice": 45,
+      "category": "FRUITS",
+      "subCategory": "TROPICAL",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/shagor-kola-banana-sagor-4-pcs.png?updatedAt=1751978910438"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "FRUITS",
+        "BANANA",
+        "FRESH"
+      ],
+      "weight": 0.2,
+      "dimensions": {
+        "length": 20,
+        "width": 5,
+        "height": 5
+      },
+      "manufacturer": "Local Farms",
+      "supplier": "Dhaka Fruit Market",
+      "barcode": "123456789302",
+      "sku": "BANANA-001",
+      "inventories": [
+        {
+          "stock": 150,
+          "lowStockThreshold": 20,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Apple",
+      "description": "Fresh red apples, crisp and sweet",
+      "price": 200,
+      "costPrice": 160,
+      "category": "FRUITS",
+      "subCategory": "TEMPERATE",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/apple.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "FRUITS",
+        "APPLE",
+        "FRESH"
+      ],
+      "weight": 0.2,
+      "dimensions": {
+        "length": 8,
+        "width": 8,
+        "height": 8
+      },
+      "manufacturer": "Imported Fruits Co.",
+      "supplier": "Sylhet Fruit Market",
+      "barcode": "123456789303",
+      "sku": "APPLE-001",
+      "inventories": [
+        {
+          "stock": 80,
+          "lowStockThreshold": 15,
+          "branchCode": "GLS001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001"
+      ],
+      "discount": {
+        "type": "fixed",
+        "value": 20,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-10T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Pineapple",
+      "description": "Sweet and tangy pineapples, locally sourced",
+      "price": 120,
+      "costPrice": 90,
+      "category": "FRUITS",
+      "subCategory": "TROPICAL",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/pineapple.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "SEASONAL",
+      "tags": [
+        "FRUITS",
+        "PINEAPPLE",
+        "FRESH"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 15,
+        "width": 12,
+        "height": 12
+      },
+      "manufacturer": "Local Orchards",
+      "supplier": "Chittagong Fruit Market",
+      "barcode": "123456789304",
+      "sku": "PINEAPPLE-001",
+      "inventories": [
+        {
+          "stock": 60,
+          "lowStockThreshold": 10,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 50,
+          "lowStockThreshold": 10,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Potato",
+      "description": "Freshly harvested potatoes, ideal for everyday cooking",
+      "price": 30,
+      "costPrice": 20,
+      "category": "VEGETABLES",
+      "subCategory": "ROOT",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/potato.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "VEGETABLES",
+        "POTATO",
+        "STAPLE"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 10,
+        "width": 8,
+        "height": 8
+      },
+      "manufacturer": "Local Farms",
+      "supplier": "Dhaka Vegetable Market",
+      "barcode": "123456789401",
+      "sku": "POTATO-001",
+      "inventories": [
+        {
+          "stock": 198,
+          "lowStockThreshold": 50,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 179,
+          "lowStockThreshold": 40,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 5,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-15T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Carrot",
+      "description": "Fresh organic carrots, crisp and sweet",
+      "price": 40,
+      "costPrice": 30,
+      "category": "VEGETABLES",
+      "subCategory": "ROOT",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/carrot.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "VEGETABLES",
+        "CARROT",
+        "ORGANIC"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 15,
+        "width": 5,
+        "height": 5
+      },
+      "manufacturer": "Local Farms",
+      "supplier": "Sylhet Vegetable Market",
+      "barcode": "123456789402",
+      "sku": "CARROT-001",
+      "inventories": [
+        {
+          "stock": 100,
+          "lowStockThreshold": 20,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Spinach",
+      "description": "Fresh green spinach, perfect for salads and curries",
+      "price": 25,
+      "costPrice": 15,
+      "category": "VEGETABLES",
+      "subCategory": "LEAFY",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/spinach.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "VEGETABLES",
+        "SPINACH",
+        "LEAFY"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 20,
+        "width": 15,
+        "height": 5
+      },
+      "manufacturer": "Local Farms",
+      "supplier": "Chittagong Vegetable Market",
+      "barcode": "123456789403",
+      "sku": "SPINACH-001",
+      "inventories": [
+        {
+          "stock": 148,
+          "lowStockThreshold": 30,
+          "branchCode": "GLS001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001"
+      ],
+      "discount": {
+        "type": "fixed",
+        "value": 5,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-10T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Cauliflower",
+      "description": "Fresh cauliflower, ideal for stir-fries and curries",
+      "price": 50,
+      "costPrice": 35,
+      "category": "VEGETABLES",
+      "subCategory": "CRUCIFEROUS",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/fulkopi-cauliflower.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "SEASONAL",
+      "tags": [
+        "VEGETABLES",
+        "CAULIFLOWER",
+        "FRESH"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 15,
+        "width": 15,
+        "height": 10
+      },
+      "manufacturer": "Local Farms",
+      "supplier": "Rajshahi Vegetable Market",
+      "barcode": "123456789404",
+      "sku": "CAULIFLOWER-001",
+      "inventories": [
+        {
+          "stock": 80,
+          "lowStockThreshold": 10,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 70,
+          "lowStockThreshold": 10,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Fresh Milk",
+      "description": "Pasteurized full-cream milk, locally sourced",
+      "price": 80,
+      "costPrice": 65,
+      "category": "DAIRY",
+      "subCategory": "MILK",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/fresh-instant-full-cream-milk-powder-500-gm.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "DAIRY",
+        "MILK",
+        "FRESH"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 10,
+        "width": 10,
+        "height": 20
+      },
+      "manufacturer": "Milk Vita",
+      "supplier": "Dhaka Dairy Co.",
+      "barcode": "123456789501",
+      "sku": "MILK-FRESH-001",
+      "inventories": [
+        {
+          "stock": 148,
+          "lowStockThreshold": 30,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 119,
+          "lowStockThreshold": 25,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 5,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-15T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Cheddar Cheese",
+      "description": "Aged cheddar cheese block, perfect for sandwiches",
+      "price": 500,
+      "costPrice": 400,
+      "category": "DAIRY",
+      "subCategory": "CHEESE",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/cheddar_cheese.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "DAIRY",
+        "CHEESE",
+        "PREMIUM"
+      ],
+      "weight": 0.2,
+      "dimensions": {
+        "length": 15,
+        "width": 10,
+        "height": 5
+      },
+      "manufacturer": "Arla",
+      "supplier": "Sylhet Dairy Suppliers",
+      "barcode": "123456789502",
+      "sku": "CHEDDAR-001",
+      "inventories": [
+        {
+          "stock": 50,
+          "lowStockThreshold": 10,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Yogurt",
+      "description": "Natural plain yogurt, ideal for breakfast",
+      "price": 50,
+      "costPrice": 40,
+      "category": "DAIRY",
+      "subCategory": "YOGURT",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/yogurt.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "DAIRY",
+        "YOGURT",
+        "FRESH"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 12,
+        "width": 12,
+        "height": 8
+      },
+      "manufacturer": "Milk Vita",
+      "supplier": "Chittagong Dairy Co.",
+      "barcode": "123456789503",
+      "sku": "YOGURT-001",
+      "inventories": [
+        {
+          "stock": 100,
+          "lowStockThreshold": 20,
+          "branchCode": "GLS001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001"
+      ],
+      "discount": {
+        "type": "fixed",
+        "value": 10,
+        "startDate": "2025-07-08T00:00:00.000Z",
+        "endDate": "2025-07-10T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Butter",
+      "description": "Salted butter, perfect for cooking and spreading",
+      "price": 200,
+      "costPrice": 160,
+      "category": "DAIRY",
+      "subCategory": "BUTTER",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/butter.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "DAIRY",
+        "BUTTER",
+        "FRESH"
+      ],
+      "weight": 0.2,
+      "dimensions": {
+        "length": 10,
+        "width": 8,
+        "height": 5
+      },
+      "manufacturer": "Milk Vita",
+      "supplier": "Rajshahi Dairy Suppliers",
+      "barcode": "123456789504",
+      "sku": "BUTTER-001",
+      "inventories": [
+        {
+          "stock": 80,
+          "lowStockThreshold": 15,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 70,
+          "lowStockThreshold": 10,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Frozen Shrimp",
+      "description": "Fresh frozen shrimp, ideal for curries and grills",
+      "price": 600,
+      "costPrice": 500,
+      "category": "FROZEN",
+      "subCategory": "SEAFOOD",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/frozen_shrimp.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "FROZEN",
+        "SHRIMP",
+        "SEAFOOD"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 20,
+        "width": 15,
+        "height": 5
+      },
+      "manufacturer": "Coastal Fisheries",
+      "supplier": "Chittagong Seafood Co.",
+      "barcode": "123456789601",
+      "sku": "SHRIMP-FROZEN-001",
+      "stock": -1,
+      "inventories": [
+        {
+          "stock": 39,
+          "lowStockThreshold": 10,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 34,
+          "lowStockThreshold": 8,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 8,
+        "startDate": "2025-07-09T00:00:00.000Z",
+        "endDate": "2025-07-16T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Frozen Pizza",
+      "description": "Margherita frozen pizza, ready to bake",
+      "price": 350,
+      "costPrice": 280,
+      "category": "FROZEN",
+      "subCategory": "MEALS",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/prozen_pizza.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "FROZEN",
+        "PIZZA",
+        "MEALS"
+      ],
+      "weight": 0.4,
+      "dimensions": {
+        "length": 25,
+        "width": 25,
+        "height": 3
+      },
+      "manufacturer": "Pran Foods",
+      "supplier": "Dhaka Frozen Foods",
+      "barcode": "123456789602",
+      "sku": "PIZZA-FROZEN-001",
+      "inventories": [
+        {
+          "stock": 30,
+          "lowStockThreshold": 5,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Frozen Peas",
+      "description": "Green peas, frozen for freshness",
+      "price": 100,
+      "costPrice": 80,
+      "category": "FROZEN",
+      "subCategory": "VEGETABLES",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/frozen_peas.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "FROZEN",
+        "PEAS",
+        "VEGETABLES"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 15,
+        "width": 10,
+        "height": 5
+      },
+      "manufacturer": "Local Farms",
+      "supplier": "Sylhet Frozen Foods",
+      "barcode": "123456789603",
+      "sku": "PEAS-FROZEN-001",
+      "stock": -1,
+      "inventories": [
+        {
+          "stock": 49,
+          "lowStockThreshold": 10,
+          "branchCode": "GLS001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001"
+      ],
+      "discount": {
+        "type": "fixed",
+        "value": 15,
+        "startDate": "2025-07-09T00:00:00.000Z",
+        "endDate": "2025-07-11T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Frozen Chicken Nuggets",
+      "description": "Breaded chicken nuggets, perfect for quick meals",
+      "price": 300,
+      "costPrice": 240,
+      "category": "FROZEN",
+      "subCategory": "MEAT",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/frozen_chicken_nuggets.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "FROZEN",
+        "CHICKEN",
+        "MEALS"
+      ],
+      "weight": 0.5,
+      "dimensions": {
+        "length": 20,
+        "width": 15,
+        "height": 5
+      },
+      "manufacturer": "Kazi Farms",
+      "supplier": "Dhaka Frozen Foods",
+      "barcode": "123456789604",
+      "sku": "NUGGETS-FROZEN-001",
+      "inventories": [
+        {
+          "stock": 45,
+          "lowStockThreshold": 10,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 40,
+          "lowStockThreshold": 8,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Basmati Rice",
+      "description": "Premium long-grain basmati rice, ideal for biryani",
+      "price": 200,
+      "costPrice": 160,
+      "category": "GROCERY",
+      "subCategory": "RICE",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/basmati_rice.png?updatedAt=1752033352218"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "GROCERY",
+        "RICE",
+        "PREMIUM"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 20,
+        "width": 15,
+        "height": 5
+      },
+      "manufacturer": "Pran Foods",
+      "supplier": "Dhaka Grain Market",
+      "barcode": "123456789701",
+      "sku": "RICE-BASMATI-001",
+      "stock": -1,
+      "inventories": [
+        {
+          "stock": 299,
+          "lowStockThreshold": 50,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 249,
+          "lowStockThreshold": 40,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ],
+      "discount": {
+        "type": "percentage",
+        "value": 10,
+        "startDate": "2025-07-09T00:00:00.000Z",
+        "endDate": "2025-07-16T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Lentils (Masoor Dal)",
+      "description": "Red lentils, perfect for dal curry",
+      "price": 120,
+      "costPrice": 90,
+      "category": "GROCERY",
+      "subCategory": "PULSES",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/fresh-premium-moshur-dal-1-kg.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "GROCERY",
+        "LENTILS",
+        "STAPLE"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 18,
+        "width": 12,
+        "height": 5
+      },
+      "manufacturer": "Fresh",
+      "supplier": "Sylhet Grain Market",
+      "barcode": "123456789702",
+      "sku": "LENTILS-MASOOR-001",
+      "inventories": [
+        {
+          "stock": 200,
+          "lowStockThreshold": 30,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "DHN001"
+      ]
+    },
+    {
+      "name": "Sugar",
+      "description": "Refined white sugar for daily use",
+      "price": 90,
+      "costPrice": 70,
+      "category": "GROCERY",
+      "subCategory": "SWEETENERS",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/sugar.png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "GROCERY",
+        "SUGAR",
+        "STAPLE"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 15,
+        "width": 10,
+        "height": 8
+      },
+      "manufacturer": "Deshbandhu Sugar",
+      "supplier": "Chittagong Sugar Suppliers",
+      "barcode": "123456789703",
+      "sku": "SUGAR-001",
+      "stock": 9,
+      "inventories": [
+        {
+          "stock": 249,
+          "lowStockThreshold": 50,
+          "branchCode": "GLS001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001"
+      ],
+      "discount": {
+        "type": "fixed",
+        "value": 10,
+        "startDate": "2025-07-09T00:00:00.000Z",
+        "endDate": "2025-07-11T23:59:59.000Z"
+      }
+    },
+    {
+      "name": "Cooking Oil (Soybean)",
+      "description": "Soybean oil for cooking and frying",
+      "price": 150,
+      "costPrice": 120,
+      "category": "GROCERY",
+      "subCategory": "OILS",
+      "status": "ACTIVE",
+      "images": [
+        "https://ik.imagekit.io/4iqsux69yt/Product%20Image/Cooking%20Oil%20(Soybean).png"
+      ],
+      "availability": "SELECTED_BRANCHES",
+      "operationType": "REGULAR",
+      "tags": [
+        "GROCERY",
+        "OIL",
+        "COOKING"
+      ],
+      "weight": 1,
+      "dimensions": {
+        "length": 10,
+        "width": 10,
+        "height": 25
+      },
+      "manufacturer": "Rupchanda",
+      "supplier": "Dhaka Oil Distributors",
+      "barcode": "123456789704",
+      "sku": "OIL-SOYBEAN-001",
+      "stock": 20,
+      "inventories": [
+        {
+          "stock": 176,
+          "lowStockThreshold": 30,
+          "branchCode": "GLS001"
+        },
+        {
+          "stock": 156,
+          "lowStockThreshold": 25,
+          "branchCode": "DHN001"
+        }
+      ],
+      "availableBranchCodes": [
+        "GLS001",
+        "DHN001"
+      ]
+    }
+  ]
+}

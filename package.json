@@ -18,11 +18,13 @@
     "seed": "tsx src/seed/seed.ts",
     "seed:admin": "tsx src/seed/seed.ts --admin",
     "seed:users": "tsx src/seed/seed.ts --users",
+    "seed:catalog": "tsx src/seed/seedCatalog.ts",
+    "sync:indexes": "tsx src/scripts/syncIndexes.ts",
     "seed:demo": "tsx src/seed/seed.ts && tsx src/seed/seedCatalog.ts && tsx src/seed/seedOrders.ts",
-    "migrate:branch-refs": "tsx src/scripts/normalizeBranchRefs.ts",
+        "migrate:branch-refs": "tsx src/scripts/normalizeBranchRefs.ts",
     "seed:orders": "tsx src/seed/seedOrders.ts",
     "smoke": "tsx src/scripts/smokeTest.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
