@@ -31,13 +31,14 @@ exports.default = {
     cloudinary_cloud_name: requireEnvInProd("CLOUDINARY_CLOUD_NAME"),
     cloudinary_api_key: requireEnvInProd("CLOUDINARY_API_KEY"),
     cloudinary_api_secret: requireEnvInProd("CLOUDINARY_API_SECRET"),
-    sslStoreId: process.env.SSL_STORE_ID,
-    sslStorePassword: process.env.SSL_STORE_PASSWORD,
+    sslStoreId: process.env.Store_ID,
+    sslStorePassword: process.env.Store_Password,
     backendUrl: process.env.BACKEND_URL ?? "http://localhost:5000",
     clientUrl: process.env.CLIENT_URL ?? "http://localhost:3000",
     adminEmail: process.env.ADMIN_EMAIL,
     adminPassword: process.env.ADMIN_PASSWORD,
     adminProfilePhoto: process.env.ADMIN_PROFILE_PHOTO,
     adminMobileNumber: process.env.ADMIN_MOBILE_NUMBER,
+    SSL_COMMERCE_URL: process.env.SSL_COMMERCE_URL,
 };
 //# sourceMappingURL=index.js.map

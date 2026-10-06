@@ -24,6 +24,18 @@ const orderSchema = new mongoose_1.Schema({
         phone: { type: String, required: true },
     },
     totalPrice: { type: Number, required: true, min: 0 },
+    /**
+     * Branch the customer asked to fulfil from, chosen at checkout.
+     *
+     * This was never stored: the field was absent from the model *and* from the
+     * create-order zod schema, and `validateRequest` replaces `req.body` with the
+     * parsed (unknown-key-stripped) result — so the branch picker on the
+     * storefront silently did nothing.
+     *
+     * Optional by design: an order may be fulfilled centrally, and the seed data
+     * predates this field.
+     */
+    branchId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Branch", required: false },
     status: {
         type: String,
         enum: Object.keys(orderInterface_1.ORDER_STATUS),
@@ -54,5 +66,6 @@ orderSchema.index({ userId: 1, status: 1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ "items.productId": 1 });
 orderSchema.index({ createdAt: -1 });
+orderSchema.index({ branchId: 1, createdAt: -1 });
 exports.Order = (0, mongoose_1.model)("Order", orderSchema);
 //# sourceMappingURL=Order.js.map

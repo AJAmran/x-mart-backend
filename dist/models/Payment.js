@@ -17,5 +17,6 @@ const paymentSchema = new mongoose_1.Schema({
 }, { timestamps: true });
 paymentSchema.index({ orderId: 1, status: 1 });
 paymentSchema.index({ status: 1, updatedAt: -1 });
+paymentSchema.index({ userId: 1, createdAt: -1 });
 exports.Payment = (0, mongoose_1.model)("Payment", paymentSchema);
 //# sourceMappingURL=Payment.js.map

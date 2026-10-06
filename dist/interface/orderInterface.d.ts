@@ -28,6 +28,8 @@ export type TOrder = {
     items: TOrderItem[];
     shippingInfo: TShippingInfo;
     totalPrice: number;
+    /** Branch chosen at checkout for fulfilment. Optional. */
+    branchId?: Types.ObjectId | string;
     status: keyof typeof ORDER_STATUS;
     paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
     stockDeducted?: boolean;

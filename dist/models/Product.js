@@ -70,7 +70,8 @@ productSchema.index({ category: 1, price: 1 });
 productSchema.index({ category: 1, createdAt: -1 });
 productSchema.index({ status: 1, createdAt: -1 });
 productSchema.index({ price: 1 });
-productSchema.index({ sku: 1 }, { unique: true });
+// `sku` already declares `unique: true`, which creates the index. Repeating it
+// here triggered Mongoose's "Duplicate schema index" warning.
 // "Featured deals" filter — powers ?discount=true in the repository
 productSchema.index({ "discount.endDate": 1, "discount.value": -1 });
 productSchema.index({ "inventories.branchId": 1 });

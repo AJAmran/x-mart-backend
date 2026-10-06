@@ -29,7 +29,7 @@ export declare const OrderValidation: {
                 city: z.ZodString;
                 postalCode: z.ZodString;
                 division: z.ZodString;
-                phone: z.ZodString;
+                phone: z.ZodEffects<z.ZodString, string, string>;
             }, "strip", z.ZodTypeAny, {
                 name: string;
                 email: string;
@@ -50,6 +50,15 @@ export declare const OrderValidation: {
                 addressLine2?: string | undefined;
             }>;
             paymentMethod: z.ZodEnum<["CASH_ON_DELIVERY", "ONLINE"]>;
+            /**
+             * Fulfillment branch picked on the storefront.
+             *
+             * Without this key in the schema, zod stripped it and `validateRequest`
+             * wrote back the stripped body — the branch selector silently had no effect.
+             * Validated as a 24-hex ObjectId so a bad value fails loudly at the edge
+             * instead of being cast to null deeper in.
+             */
+            branchId: z.ZodOptional<z.ZodString>;
         }, "strip", z.ZodTypeAny, {
             items: {
                 name: string;
@@ -69,6 +78,7 @@ export declare const OrderValidation: {
                 addressLine2?: string | undefined;
             };
             paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+            branchId?: string | undefined;
         }, {
             items: {
                 name: string;
@@ -88,6 +98,7 @@ export declare const OrderValidation: {
                 addressLine2?: string | undefined;
             };
             paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+            branchId?: string | undefined;
         }>;
     }, "strip", z.ZodTypeAny, {
         body: {
@@ -109,6 +120,7 @@ export declare const OrderValidation: {
                 addressLine2?: string | undefined;
             };
             paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+            branchId?: string | undefined;
         };
     }, {
         body: {
@@ -130,6 +142,7 @@ export declare const OrderValidation: {
                 addressLine2?: string | undefined;
             };
             paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
+            branchId?: string | undefined;
         };
     }>;
     updateOrderStatusValidationSchema: z.ZodObject<{

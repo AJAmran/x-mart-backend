@@ -17,9 +17,14 @@ router.get("/:id", productController_1.ProductControllers.getProductById);
 router.patch("/:id", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(productValidation_1.ProductValidation.updateProductValidationSchema), productController_1.ProductControllers.updateProduct);
 router.delete("/:id", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), productController_1.ProductControllers.deleteProduct);
 // Inventory Management
-router.patch("/:id/update-stock", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(productValidation_1.ProductValidation.updateProductValidationSchema), productController_1.ProductControllers.updateStock);
+// Must use the stock-specific schema. The product schema stripped `branchId`
+// (not a product field), so the service always received `undefined` and every
+// stock update 404'd.
+router.patch("/:id/update-stock", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(productValidation_1.ProductValidation.updateStockValidationSchema), productController_1.ProductControllers.updateStock);
 // Discount Management
-router.post("/:id/apply-discount", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(productValidation_1.ProductValidation.createProductValidationSchema), productController_1.ProductControllers.applyDiscount);
+// Same problem: the product schema demanded name/price/sku/etc., so applying a
+// discount with just the discount payload was rejected with a 400.
+router.post("/:id/apply-discount", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), (0, validateRequest_1.default)(productValidation_1.ProductValidation.applyDiscountValidationSchema), productController_1.ProductControllers.applyDiscount);
 router.delete("/:id/remove-discount", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.ADMIN), productController_1.ProductControllers.removeDiscount);
 exports.default = router;
 //# sourceMappingURL=productRoutes.js.map

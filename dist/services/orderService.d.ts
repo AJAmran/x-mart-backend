@@ -42,6 +42,7 @@ export declare const OrderService: {
                 phone: string;
             };
             totalPrice: number;
+            branchId?: (Types.ObjectId | string) | undefined;
             status: keyof typeof ORDER_STATUS;
             paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
             stockDeducted?: boolean | undefined;
@@ -79,6 +80,7 @@ export declare const OrderService: {
             phone: string;
         };
         totalPrice: number;
+        branchId?: (Types.ObjectId | string) | undefined;
         status: keyof typeof ORDER_STATUS;
         paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
         stockDeducted?: boolean | undefined;
@@ -115,6 +117,7 @@ export declare const OrderService: {
             phone: string;
         };
         totalPrice: number;
+        branchId?: (Types.ObjectId | string) | undefined;
         status: keyof typeof ORDER_STATUS;
         paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
         stockDeducted?: boolean | undefined;
@@ -151,6 +154,7 @@ export declare const OrderService: {
             phone: string;
         };
         totalPrice: number;
+        branchId?: (Types.ObjectId | string) | undefined;
         status: keyof typeof ORDER_STATUS;
         paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
         stockDeducted?: boolean | undefined;
@@ -187,6 +191,7 @@ export declare const OrderService: {
             phone: string;
         };
         totalPrice: number;
+        branchId?: (Types.ObjectId | string) | undefined;
         status: keyof typeof ORDER_STATUS;
         paymentMethod: "CASH_ON_DELIVERY" | "ONLINE";
         stockDeducted?: boolean | undefined;

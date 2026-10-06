@@ -106,7 +106,7 @@ const updateStock = (0, catchAsync_1.catchAsync)(async (req, res) => {
 });
 const applyDiscount = (0, catchAsync_1.catchAsync)(async (req, res) => {
     const { id } = req.params;
-    const { discount } = req.body;
+    const discount = req.body;
     const result = await productService_1.ProductService.applyDiscount(id, discount);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

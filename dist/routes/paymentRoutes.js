@@ -14,5 +14,7 @@ router.post("/fail/:tranId", paymentController_1.PaymentController.handleFail);
 router.post("/cancel/:tranId", paymentController_1.PaymentController.handleCancel);
 router.post("/ipn/:tranId", paymentController_1.PaymentController.handleIpn);
 router.get("/status/:orderId", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.USER), paymentController_1.PaymentController.getPaymentStatus);
+router.get("/", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.USER), paymentController_1.PaymentController.getUserPayments);
+router.get("/:id", (0, authMiddleware_1.default)(userConstant_1.USER_ROLE.USER), paymentController_1.PaymentController.getPaymentDetails);
 exports.default = router;
 //# sourceMappingURL=paymentRoutes.js.map

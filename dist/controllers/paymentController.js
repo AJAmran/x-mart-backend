@@ -9,19 +9,11 @@ const orderService_1 = require("../services/orderService");
 const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../config"));
 const AppErros_1 = __importDefault(require("../error/AppErros"));
-const isTrustedGatewayOrigin = (origin) => {
-    if (!origin)
-        return false;
-    const trusted = [
-        "https://securepay.sslcommerz.com",
-        "https://sandbox.sslcommerz.com",
-        "sandbox.sslcommerz.com",
-        "securepay.sslcommerz.com",
-    ];
-    return trusted.some((host) => origin.includes(host));
-};
-const initPayment = async (req, res) => {
-    const { orderId, idempotencyKey } = req.body;
+const catchAsync_1 = require("../utils/catchAsync");
+const sendResponse_1 = __importDefault(require("../utils/sendResponse"));
+const paymentValidation_1 = require("../validations/paymentValidation");
+const initPayment = (0, catchAsync_1.catchAsync)(async (req, res) => {
+    const { orderId } = req.body;
     const userId = req.user?._id;
     const order = await orderService_1.OrderService.getOrderById(orderId);
     if (!order) {
@@ -46,36 +38,31 @@ const initPayment = async (req, res) => {
         message: result.idempotent ? "Payment session already in progress" : "Payment initiated",
         data: result,
     });
-};
-const handleSuccess = async (req, res) => {
+});
+const handleSuccess = (0, catchAsync_1.catchAsync)(async (req, res) => {
     const { tranId } = req.params;
     // C-01 FIX is inside PaymentService.handleSuccess — it calls the gateway
     // validation API and refuses to mark the order paid if the call fails.
     const payment = await paymentService_1.PaymentService.handleSuccess(tranId, req.body);
     const orderId = payment.orderId;
     res.redirect(`${config_1.default.clientUrl}/payment/success?tranId=${tranId}&orderId=${orderId}`);
-};
-const handleFail = async (req, res) => {
+});
+const handleFail = (0, catchAsync_1.catchAsync)(async (req, res) => {
     const { tranId } = req.params;
     await paymentService_1.PaymentService.handleFail(tranId, req.body);
     res.redirect(`${config_1.default.clientUrl}/payment/fail?tranId=${tranId}`);
-};
-const handleCancel = async (req, res) => {
+});
+const handleCancel = (0, catchAsync_1.catchAsync)(async (req, res) => {
     const { tranId } = req.params;
     await paymentService_1.PaymentService.handleCancel(tranId);
     res.redirect(`${config_1.default.clientUrl}/payment/cancel?tranId=${tranId}`);
-};
-const handleIpn = async (req, res) => {
-    // The IPN POST is allowed only from the gateway origin. Other callers get 403.
-    const origin = (req.headers.origin || req.headers.referer);
-    if (!isTrustedGatewayOrigin(origin)) {
-        return res.status(http_status_1.default.FORBIDDEN).json({ success: false, message: "Forbidden" });
-    }
+});
+const handleIpn = (0, catchAsync_1.catchAsync)(async (req, res) => {
     const { tranId } = req.params;
     await paymentService_1.PaymentService.handleIpn(tranId, req.body);
     res.status(http_status_1.default.OK).json({ success: true });
-};
-const getPaymentStatus = async (req, res) => {
+});
+const getPaymentStatus = (0, catchAsync_1.catchAsync)(async (req, res) => {
     const { orderId } = req.params;
     const payment = await paymentService_1.PaymentService.getPaymentByOrderId(orderId);
     if (!payment) {
@@ -88,7 +75,36 @@ const getPaymentStatus = async (req, res) => {
         return res.status(http_status_1.default.FORBIDDEN).json({ success: false, message: "Forbidden" });
     }
     res.status(http_status_1.default.OK).json({ success: true, data: payment });
-};
+});
+const getUserPayments = (0, catchAsync_1.catchAsync)(async (req, res) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        throw new AppErros_1.default(http_status_1.default.UNAUTHORIZED, "User ID not found in token");
+    }
+    const { page, limit } = paymentValidation_1.PaymentValidation.paginationSchema.parse(req.query);
+    const result = await paymentService_1.PaymentService.getUserPayments(String(userId), { page, limit });
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Payments fetched successfully",
+        meta: result.meta,
+        data: result.payments,
+    });
+});
+const getPaymentDetails = (0, catchAsync_1.catchAsync)(async (req, res) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        throw new AppErros_1.default(http_status_1.default.UNAUTHORIZED, "User ID not found in token");
+    }
+    const { id } = paymentValidation_1.PaymentValidation.paymentIdSchema.parse(req.params);
+    const result = await paymentService_1.PaymentService.getPaymentDetails(String(userId), id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Payment details fetched successfully",
+        data: result,
+    });
+});
 exports.PaymentController = {
     initPayment,
     handleSuccess,
@@ -96,5 +112,7 @@ exports.PaymentController = {
     handleCancel,
     handleIpn,
     getPaymentStatus,
+    getUserPayments,
+    getPaymentDetails,
 };
 //# sourceMappingURL=paymentController.js.map

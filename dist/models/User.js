@@ -38,7 +38,8 @@ const userSchema = new mongoose_1.Schema({
 }, { timestamps: true, virtuals: true });
 // Production indexes
 userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ mobileNumber: 1 }, { unique: true });
+// `mobileNumber` already declares `unique: true`, which creates the index.
+// Repeating it here triggered Mongoose's "Duplicate schema index" warning.
 userSchema.index({ role: 1, status: 1 });
 userSchema.pre("save", async function (next) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
