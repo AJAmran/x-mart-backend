@@ -75,11 +75,11 @@ app.use((0, helmet_1.default)({
 }));
 app.use(logger_1.httpLogger);
 // ── CORS: explicit allowlist, never fall through to *
-const allowedOrigins = new Set([
-    "http://localhost:3000",
-    config_1.default.clientUrl,
-    "https://x-mart-client.vercel.app",
-]
+//
+// `CLIENT_URL` is the customer's own storefront origin and is the only value
+// that should need editing. The demo deployment's own Vercel domain used to be
+// pinned here; leaving it in means every install keeps trusting that host.
+const allowedOrigins = new Set(["http://localhost:3000", config_1.default.clientUrl]
     .filter(Boolean)
     .map((o) => o.replace(/\/+$/, "")));
 /**

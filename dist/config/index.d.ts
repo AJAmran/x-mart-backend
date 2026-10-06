@@ -12,12 +12,13 @@ declare const _default: {
     cloudinary_api_secret: string | undefined;
     sslStoreId: string | undefined;
     sslStorePassword: string | undefined;
+    SSL_COMMERCE_URL: string;
     backendUrl: string;
     clientUrl: string;
+    cronSecret: string | undefined;
     adminEmail: string | undefined;
     adminPassword: string | undefined;
     adminProfilePhoto: string | undefined;
     adminMobileNumber: string | undefined;
-    SSL_COMMERCE_URL: string | undefined;
 };
 export default _default;
