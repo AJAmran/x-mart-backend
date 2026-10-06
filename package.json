@@ -16,7 +16,8 @@
     "seed": "tsx src/seed/seed.ts",
     "seed:admin": "tsx src/seed/seed.ts --admin",
     "seed:users": "tsx src/seed/seed.ts --users",
-    "test": "echo \"Error: no test specified\" && exit 1"
+        "migrate:branch-refs": "tsx src/scripts/normalizeBranchRefs.ts",
+        "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
