@@ -11,5 +11,7 @@ router.post("/fail/:tranId", PaymentController.handleFail);
 router.post("/cancel/:tranId", PaymentController.handleCancel);
 router.post("/ipn/:tranId", PaymentController.handleIpn);
 router.get("/status/:orderId", auth(USER_ROLE.USER), PaymentController.getPaymentStatus);
+router.get("/", auth(USER_ROLE.USER), PaymentController.getUserPayments);
+router.get("/:id", auth(USER_ROLE.USER), PaymentController.getPaymentDetails);
 
 export default router;

@@ -30,16 +30,29 @@ declare module "sslcommerz-lts" {
   }
 
   interface SSLCommerzInitResponse {
-    status: "success" | "fail";
+    // V4 API returns uppercase status: "SUCCESS" | "FAILED"
+    status: string;
     failedreason?: string;
     sessionkey?: string;
     GatewayPageURL?: string;
     [key: string]: unknown;
   }
 
+  interface SSLCommerzValidationResponse {
+    // "VALID", "VALIDATED", "FAILED", "CANCELLED", "EXPIRED", "INVALID_TRANSACTION", ...
+    status?: string;
+    // The merchant tran_id query wraps matches in `element` (one per attempt).
+    element?: Array<{ val_id?: string; tran_id?: string; status?: string; amount?: string }>;
+    [key: string]: unknown;
+  }
+
   class SSLCommerzPayment {
     constructor(storeId: string, storePassword: string, isSandbox: boolean);
     init(data: SSLCommerzInitData): Promise<SSLCommerzInitResponse>;
+    validate(data: { val_id: string }): Promise<SSLCommerzValidationResponse>;
+    transactionQueryByTransactionId(data: {
+      tran_id: string;
+    }): Promise<SSLCommerzValidationResponse>;
   }
 
   export default SSLCommerzPayment;

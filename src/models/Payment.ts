@@ -20,5 +20,6 @@ const paymentSchema = new Schema<TPayment>(
 
 paymentSchema.index({ orderId: 1, status: 1 });
 paymentSchema.index({ status: 1, updatedAt: -1 });
+paymentSchema.index({ userId: 1, createdAt: -1 });
 
 export const Payment = model<TPayment>("Payment", paymentSchema);
