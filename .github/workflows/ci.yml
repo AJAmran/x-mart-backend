@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [development, main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The same preflight a store owner runs, so a missing secret or a
+      # placeholder admin password fails the build instead of production.
+      # Placeholder values are supplied here deliberately.
+      - name: Configuration check
+        run: npm run doctor
+        env:
+          MONGO_URI: mongodb://appuser:apppassword@localhost:27017/xmart
+          JWT_SECRET: ci-only-not-a-real-secret-0000000000000000000000000000
+          JWT_REFRESH_SECRET: ci-only-not-a-real-secret-1111111111111111111111111111
+          ADMIN_PASSWORD: CiOnlyPassword123
+          ADMIN_EMAIL: ci@xmart.test
+          CLIENT_URL: http://localhost:3000
+          CRON_SECRET: ci-only-not-a-real-secret-2222222222222222222222222222
+
+      - run: npm run build
+
+      # Non-blocking: the repository has pre-existing lint debt (~29 errors,
+      # almost all `no-explicit-any` in services and seed scripts). Flipping
+      # this to blocking is the natural follow-up once that is paid down, and
+      # `continue-on-error` keeps the badge honest in the meantime instead of
+      # red from the first commit.
+      - name: Lint
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Start MongoDB
+        run: |
+          docker run -d --name mongo-ci -p 27017:27017 \
+            -e MONGO_INITDB_ROOT_USERNAME=appuser \
+            -e MONGO_INITDB_ROOT_PASSWORD=apppassword \
+            mongo:7
+          for i in $(seq 1 30); do
+            docker exec mongo-ci mongosh --quiet \
+              --eval "db.adminCommand('ping')" \
+              --username appuser --password apppassword --authenticationDatabase admin \
+              >/dev/null 2>&1 && break
+            sleep 2
+          done
+
+      - name: Seed the demo store
+        run: |
+          npm run seed
+          npm run seed:catalog
+        env:
+          MONGO_URI: mongodb://appuser:apppassword@localhost:27017/xmart
+
+      - name: Index sync
+        run: npm run sync:indexes
+        env:
+          MONGO_URI: mongodb://appuser:apppassword@localhost:27017/xmart
+
+      - name: Start the API
+        run: npm run dev &
+        env:
+          NODE_ENV: production
+          MONGO_URI: mongodb://appuser:apppassword@localhost:27017/xmart
+          JWT_SECRET: ci-only-not-a-real-secret-0000000000000000000000000000
+          JWT_REFRESH_SECRET: ci-only-not-a-real-secret-1111111111111111111111111111
+          CLIENT_URL: http://localhost:3000
+          ADMIN_EMAIL: ci@xmart.test
+          ADMIN_PASSWORD: CiOnlyPassword123
+          CRON_SECRET: ci-only-not-a-real-secret-2222222222222222222222222222
+
+      - name: Wait for the API
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:5000/api/v1/health >/dev/null 2>&1; then
+              echo "API is up"; exit 0
+            fi
+            sleep 2
+          done
+          echo "API did not become healthy"; docker logs $(docker ps -q --filter name=mongo-ci) >/dev/null; exit 1
+
+      # Exercises login, catalogue, cart, checkout, admin authorisation and the
+      # cron guard against the seeded instance, then restores what it touched.
+      - name: Smoke test
+        run: npm run smoke
+        env:
+          BASE_API: http://localhost:5000/api/v1
+          ADMIN_EMAIL: ci@xmart.test
+          ADMIN_PASSWORD: CiOnlyPassword123
+          USER_EMAIL: rafiq.hasan@example.com
+          USER_PASSWORD: User@123
